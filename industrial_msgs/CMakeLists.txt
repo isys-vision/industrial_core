@@ -11,7 +11,9 @@ add_message_files(
   RobotMode.msg
   RobotStatus.msg
   ServiceReturnCode.msg
-  TriState.msg)
+  TriState.msg
+  IOReadRequestItem.msg
+  IOReadReplyItem.msg)
 
 add_service_files(
   FILES
@@ -20,7 +22,8 @@ add_service_files(
   SetDrivePower.srv
   SetRemoteLoggerLevel.srv
   StartMotion.srv
-  StopMotion.srv)
+  StopMotion.srv
+  IORead.srv)
 
 generate_messages(
   DEPENDENCIES trajectory_msgs std_msgs
