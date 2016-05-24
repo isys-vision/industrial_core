@@ -30,7 +30,8 @@ add_service_files(
   StopMotion.srv
   IORead.srv
   IOWrite.srv
-  IOInfo.srv)
+  IOInfo.srv
+  SetSpeed.srv)
 
 generate_messages(
   DEPENDENCIES trajectory_msgs std_msgs

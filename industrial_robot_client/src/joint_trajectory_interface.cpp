@@ -36,6 +36,7 @@
 
 using namespace industrial_utils::param;
 using industrial::simple_message::SimpleMessage;
+using industrial::joint_traj_pt_message::JointTrajPtMessage;
 namespace StandardSocketPorts = industrial::simple_socket::StandardSocketPorts;
 namespace SpecialSeqValues = industrial::joint_traj_pt::SpecialSeqValues;
 typedef industrial::joint_traj_pt::JointTrajPt rbt_JointTrajPt;
@@ -103,6 +104,7 @@ bool JointTrajectoryInterface::init(SmplMsgConnection* connection, const std::ve
 
   this->srv_stop_motion_ = this->node_.advertiseService("stop_motion", &JointTrajectoryInterface::stopMotionCB, this);
   this->srv_joint_trajectory_ = this->node_.advertiseService("joint_path_command", &JointTrajectoryInterface::jointTrajectoryCB, this);
+  this->srv_stop_motion_ = this->node_.advertiseService("set_speed", &JointTrajectoryInterface::setSpeedCB, this);
   this->sub_joint_trajectory_ = this->node_.subscribe("joint_path_command", 0, &JointTrajectoryInterface::jointTrajectoryCB, this);
   this->sub_cur_pos_ = this->node_.subscribe("joint_states", 1, &JointTrajectoryInterface::jointStateCB, this);
 
@@ -147,6 +149,33 @@ void JointTrajectoryInterface::jointTrajectoryCB(const trajectory_msgs::JointTra
 
   // send command messages to robot
   send_to_robot(robot_msgs);
+}
+
+bool JointTrajectoryInterface::setSpeedCB(industrial_msgs::SetSpeed::Request &req,
+                                          industrial_msgs::SetSpeed::Response &res) {
+  rbt_JointTrajPt point;
+  point.setSequence(SpecialSeqValues::SET_SPEED);
+  point.setVelocity(req.speed);
+
+  JointTrajPtMessage pointMessage;
+  pointMessage.init(point);
+
+  SimpleMessage msg;
+  if (!this->connection_->isConnected())
+  {
+    ROS_WARN("Attempting robot reconnection");
+    this->connection_->makeConnect();
+  }
+
+  ROS_INFO("Sending robot speed: %d", req.speed);
+
+  pointMessage.toTopic(msg);
+  res.success = this->connection_->sendMsg(msg);
+  if (res.success)
+    ROS_DEBUG("Speed sent to controller");
+  else
+    ROS_WARN("Failed sent speed to controller");
+  return true;
 }
 
 bool JointTrajectoryInterface::trajectory_to_msgs(const trajectory_msgs::JointTrajectoryConstPtr& traj, std::vector<JointTrajPtMessage>* msgs)

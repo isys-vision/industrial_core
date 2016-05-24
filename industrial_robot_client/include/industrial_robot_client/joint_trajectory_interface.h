@@ -39,6 +39,7 @@
 #include "ros/ros.h"
 #include "industrial_msgs/CmdJointTrajectory.h"
 #include "industrial_msgs/StopMotion.h"
+#include "industrial_msgs/SetSpeed.h"
 #include "sensor_msgs/JointState.h"
 #include "simple_message/smpl_msg_connection.h"
 #include "simple_message/socket/tcp_client.h"
@@ -215,6 +216,13 @@ protected:
   virtual void jointTrajectoryCB(const trajectory_msgs::JointTrajectoryConstPtr &msg);
 
   /**
+   * \brief Callback for set_speed service.
+   * Sends a trajectory point message with the speed and a special "set speed" flag to the robot.
+   * The message is sent immediately and not inserted into a trajectory.
+   */
+  bool setSpeedCB(industrial_msgs::SetSpeed::Request &req, industrial_msgs::SetSpeed::Response &res);
+
+  /**
    * \brief Callback function registered to ROS stopMotion service
    *   Sends stop-motion command to robot.
    *
@@ -248,6 +256,7 @@ protected:
   ros::Subscriber sub_joint_trajectory_; // handle for joint-trajectory topic subscription
   ros::ServiceServer srv_joint_trajectory_;  // handle for joint-trajectory service
   ros::ServiceServer srv_stop_motion_;   // handle for stop_motion service
+  ros::ServiceServer srv_set_speed; // handle for set_speed service
   std::vector<std::string> all_joint_names_;
   double default_joint_pos_;  // default position to use for "dummy joints", if none specified
   double default_vel_ratio_;  // default velocity ratio to use for joint commands, if no velocity or max_vel specified
