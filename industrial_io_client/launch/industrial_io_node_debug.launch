@@ -3,6 +3,5 @@
 	<param name="robot_ip_address" type="str" value="$(arg robot_ip)" />
 
 	<node name="industrial_io_node" pkg="industrial_io_client" type="industrial_io_node" output="screen" launch-prefix="xterm -e gdb --args" required="true" >
-		<rosparam command="load" file="$(find industrial_io_client)/etc/subscribe_ranges.yaml" />
 	</node>
 </launch>
