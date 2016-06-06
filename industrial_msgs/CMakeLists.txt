@@ -18,7 +18,8 @@ add_message_files(
   IOWriteReplyItem.msg
   IOInfoReplyItem.msg
   IOStreamPubItem.msg
-  IOStreamPub.msg)
+  IOStreamPub.msg
+)
 
 add_service_files(
   FILES
@@ -31,7 +32,9 @@ add_service_files(
   IORead.srv
   IOWrite.srv
   IOInfo.srv
-  SetSpeed.srv)
+  SetSpeed.srv
+  GetSpeed.srv
+)
 
 generate_messages(
   DEPENDENCIES trajectory_msgs std_msgs
