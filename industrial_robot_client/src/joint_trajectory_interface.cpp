@@ -104,7 +104,7 @@ bool JointTrajectoryInterface::init(SmplMsgConnection* connection, const std::ve
 
   this->srv_stop_motion_ = this->node_.advertiseService("stop_motion", &JointTrajectoryInterface::stopMotionCB, this);
   this->srv_joint_trajectory_ = this->node_.advertiseService("joint_path_command", &JointTrajectoryInterface::jointTrajectoryCB, this);
-  this->srv_stop_motion_ = this->node_.advertiseService("set_speed", &JointTrajectoryInterface::setSpeedCB, this);
+  this->srv_set_speed_ = this->node_.advertiseService("set_speed", &JointTrajectoryInterface::setSpeedCB, this);
   this->sub_joint_trajectory_ = this->node_.subscribe("joint_path_command", 0, &JointTrajectoryInterface::jointTrajectoryCB, this);
   this->sub_cur_pos_ = this->node_.subscribe("joint_states", 1, &JointTrajectoryInterface::jointStateCB, this);
 
