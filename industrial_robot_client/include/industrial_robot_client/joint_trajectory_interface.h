@@ -256,7 +256,7 @@ protected:
   ros::Subscriber sub_joint_trajectory_; // handle for joint-trajectory topic subscription
   ros::ServiceServer srv_joint_trajectory_;  // handle for joint-trajectory service
   ros::ServiceServer srv_stop_motion_;   // handle for stop_motion service
-  ros::ServiceServer srv_set_speed; // handle for set_speed service
+  ros::ServiceServer srv_set_speed_; // handle for set_speed service
   std::vector<std::string> all_joint_names_;
   double default_joint_pos_;  // default position to use for "dummy joints", if none specified
   double default_vel_ratio_;  // default velocity ratio to use for joint commands, if no velocity or max_vel specified
