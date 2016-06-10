@@ -115,7 +115,6 @@ protected:
    return message_id_counter++;
  }
 
-private:
  /*!
   * \brief Callback for the ROS service
   * \param req Service request
@@ -127,7 +126,7 @@ private:
   * waits for the reply with the correct message id
   * and converts that back to a ROS service response using simpleMessageToRosReply()
   */
- bool serviceCallback(typename RosServiceType::Request &req, typename RosServiceType::Response &res)
+ virtual bool serviceCallback(typename RosServiceType::Request &req, typename RosServiceType::Response &res)
  {
    ROS_INFO_STREAM(serviceName << " service called");
 
@@ -161,6 +160,7 @@ private:
    return false;
  }
 
+private:
  /*!
   * Tries to convert a simple message to the expected type
   */

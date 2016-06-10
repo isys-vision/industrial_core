@@ -39,7 +39,43 @@ namespace industrial_io_client
 
 IOWriteHandler::IOWriteHandler() : IOServiceHandler("write", industrial::io_write_reply_message::msg_type)
 {
+  ros::NodeHandle ph("~");
+  bool enableWriteByTopic = true;
+  if(!ph.getParam("enable_write_by_topic", enableWriteByTopic))
+  {
+    ROS_WARN("~enable_write_by_topic param is not set. Will use true. You will not be able to write IOs until you publish true on the enable_write topic");
+  }
 
+  if (enableWriteByTopic)
+  {
+    writeEnabled = false;
+    enableWriteSubscriber = ph.subscribe("enable_write", 1, &IOWriteHandler::writeEnabledTopicCB, this);
+  }
+  else
+  {
+    writeEnabled = true;
+  }
+}
+
+bool IOWriteHandler::serviceCallback(industrial_msgs::IOWrite::Request &req, industrial_msgs::IOWrite::Response &res)
+{
+  if (writeEnabled)
+  {
+    return IOServiceHandler::serviceCallback(req, res);
+  }
+  else
+  {
+    for (int i = 0; i < req.items.size(); ++i)
+    {
+      industrial_msgs::IOWriteRequestItem req_item;
+      industrial_msgs::IOWriteReplyItem res_item;
+      res_item.type = req_item.type;
+      res_item.index = req_item.index;
+      res_item.result = 4001;
+      res.items.push_back(res_item);
+      return true;
+    }
+  }
 }
 
 industrial::io_write_request_message::IOWriteRequestMessage IOWriteHandler::rosRequestToSimpleMessage(industrial_msgs::IOWrite::Request &req)
@@ -68,6 +104,11 @@ void IOWriteHandler::simpleMessageToRosReply(industrial::io_write_reply_message:
     item.result = reply.items[i].result;
     res_out.items[i] = item;
   }
+}
+
+void IOWriteHandler::writeEnabledTopicCB(std_msgs::Bool::ConstPtr msg)
+{
+  writeEnabled = msg->data;
 }
 
 
