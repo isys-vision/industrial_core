@@ -37,6 +37,7 @@
 #include "simple_message/messages/io_write_request_message.h"
 #include "industrial_msgs/IOWrite.h"
 #include "industrial_io_client/io_service_handler.h"
+#include "std_msgs/Bool.h"
 
 namespace industrial_io_client
 {
@@ -44,9 +45,14 @@ class IOWriteHandler : public IOServiceHandler<industrial_msgs::IOWrite, industr
 {
 public:
   IOWriteHandler();
+protected:
+  virtual bool serviceCallback(industrial_msgs::IOWrite::Request &req, industrial_msgs::IOWrite::Response &res);
 private:
   virtual industrial::io_write_request_message::IOWriteRequestMessage rosRequestToSimpleMessage(industrial_msgs::IOWrite::Request &req);
   virtual void simpleMessageToRosReply(industrial::io_write_reply_message::IOWriteReplyMessage& reply, industrial_msgs::IOWrite::Response &res_out);
+  void writeEnabledTopicCB(std_msgs::Bool::ConstPtr msg);
+  ros::Subscriber enableWriteSubscriber;
+  bool writeEnabled;
 };
 }
 
