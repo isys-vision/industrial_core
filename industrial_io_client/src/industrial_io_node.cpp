@@ -126,17 +126,17 @@ int main(int argc, char** argv)
   while(ros::ok()) {
 
     //Wait for the connection to be established and send subscription
-    if (default_tcp_connection_.isConnected() && !streamSubscriptionSent) {
-      streamSubscriptionSent = true;
-      if (!streamSubscriber.subscribeToRangesFromParameters())
-      {
-        ROS_ERROR("Could not subscribe to io ranges");
-      }
-    }
-    //Resend subscriptions if connection is lost
-    if (!default_tcp_connection_.isConnected()) {
-      streamSubscriptionSent = false;
-    }
+//    if (default_tcp_connection_.isConnected() && !streamSubscriptionSent) {
+//      streamSubscriptionSent = true;
+//      if (!streamSubscriber.subscribeToRangesFromParameters())
+//      {
+//        ROS_ERROR("Could not subscribe to io ranges");
+//      }
+//    }
+//    //Resend subscriptions if connection is lost
+//    if (!default_tcp_connection_.isConnected()) {
+//      streamSubscriptionSent = false;
+//    }
 
     ros::spinOnce();
     r.sleep();
