@@ -103,9 +103,11 @@ CONST
 	SEV_ABORT    =    2  -- ABORT severity
 
 	MOVERR_OOR   =   -1  -- Requested JPOS is out-of-range
+	
+	CONN_CLOSED = 2021 -- IO_STATUS End of file for RAM disk device -> socket closed
 
 	-- Configuration defaults
-	IO_TAG   =    4  -- Server tag
+	IO_TAG   =    5  -- Server tag
 	IO_TCP_P = RI_TCP_IO
 	LOOP_HZ      =   40  -- Hz
 
@@ -211,11 +213,18 @@ BEGIN
 				
 		stat_= ipktio_d_srl(sock_fd_)
 		IF (stat_ < 0) THEN
+			IF (stat_ = -CONN_CLOSED) THEN
+				log_info(LOG_PFIX + 'Connection closed.')
+			ELSE
 				log_error_a(LOG_PFIX + ' ipkt_d/srlise ', stat_)
-
-				-- can't continue
-				GOTO exit_discon
+			ENDIF
+			
+			-- can't continue
+			GOTO exit_discon
 		ENDIF
+		
+		-- sleep a little (1/T)
+		DELAY sleep_time_
 		
 		-- inner WHILE TRUE DO
 		ENDWHILE
