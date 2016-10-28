@@ -103,6 +103,12 @@ private:
   ros::Subscriber sub_robot_status_;
 
   /**
+   * \brief Subscribes to the relay status (typically published by the
+   * robot driver)
+   */
+  ros::Subscriber sub_relay_status_;
+
+  /**
    * \brief Watchdog time used to fail the action request if the robot
    * driver is not responding.
    */
@@ -217,6 +223,14 @@ private:
    *
    */
   void robotStatusCB(const industrial_msgs::RobotStatusConstPtr &msg);
+
+  /**
+   * \brief Relay status callback (executed when relay status
+   * message received)
+   *
+   * \param msg relay status message
+   */
+  void relayStatusCB(const industrial_msgs::RobotStatusConstPtr &msg);
 
   /**
    * \brief Aborts the current action goal and sends a stop command

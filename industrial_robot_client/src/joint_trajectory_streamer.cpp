@@ -30,6 +30,7 @@
  */
 
 #include "industrial_robot_client/joint_trajectory_streamer.h"
+#include "industrial_msgs/RobotStatus.h"
 
 using industrial::simple_message::SimpleMessage;
 
@@ -46,6 +47,8 @@ bool JointTrajectoryStreamer::init(SmplMsgConnection* connection, const std::vec
   ROS_INFO("JointTrajectoryStreamer: init");
 
   rtn &= JointTrajectoryInterface::init(connection, joint_names, velocity_limits);
+
+  feedback_publisher_ = node_.advertise<industrial_msgs::RobotStatus>("relay_feedback", 1);
 
   this->mutex_.lock();
   this->current_point_ = 0;
@@ -73,14 +76,19 @@ void JointTrajectoryStreamer::jointTrajectoryCB(const trajectory_msgs::JointTraj
   ROS_DEBUG("Current state is: %d", state);
   if (TransferStates::IDLE != state)
   {
-    if (msg->points.empty())
+    if (msg->points.empty()) {
       ROS_INFO("Empty trajectory received, canceling current trajectory");
-    else
-      ROS_ERROR("Trajectory splicing not yet implemented, stopping current motion.");
 
-	this->mutex_.lock();
-    trajectoryStop();
-	this->mutex_.unlock();
+      this->mutex_.lock();
+      trajectoryStop();
+      this->mutex_.unlock();
+    } else {
+      ROS_ERROR("Trajectory splicing not yet implemented, finishing current motion. Try again later");
+      industrial_msgs::RobotStatus feedback;
+      feedback.in_error.val = industrial_msgs::TriState::TRUE;
+      feedback_publisher_.publish(feedback);
+    }
+
     return;
   }
 

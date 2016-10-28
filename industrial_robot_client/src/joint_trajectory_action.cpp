@@ -62,6 +62,7 @@ JointTrajectoryAction::JointTrajectoryAction() :
   pub_trajectory_command_ = node_.advertise<trajectory_msgs::JointTrajectory>("joint_path_command", 1);
   sub_trajectory_state_ = node_.subscribe("feedback_states", 1, &JointTrajectoryAction::controllerStateCB, this);
   sub_robot_status_ = node_.subscribe("robot_status", 1, &JointTrajectoryAction::robotStatusCB, this);
+  sub_relay_status_ = node_.subscribe("relay_feedback", 1, &JointTrajectoryAction::relayStatusCB, this);
 
   watchdog_timer_ = node_.createTimer(ros::Duration(WATCHDOG_PERIOD_), &JointTrajectoryAction::watchdog, this, true);
   action_server_.start();
@@ -75,6 +76,18 @@ void JointTrajectoryAction::robotStatusCB(const industrial_msgs::RobotStatusCons
 {
   last_robot_status_ = msg; //caching robot status for later use.
   has_moved_once_ = has_moved_once_ ? true : (last_robot_status_->in_motion.val == industrial_msgs::TriState::TRUE);
+}
+
+void JointTrajectoryAction::relayStatusCB(const industrial_msgs::RobotStatusConstPtr &msg)
+{
+    ROS_ERROR("FEEDBACK from relay received");
+    if (msg->in_error.val == industrial_msgs::TriState::TRUE) {
+        ROS_ERROR("ERROR in relay");
+        control_msgs::FollowJointTrajectoryResult rslt;
+        rslt.error_code = control_msgs::FollowJointTrajectoryResult::GOAL_TOLERANCE_VIOLATED;
+        active_goal_.setAborted(rslt, "Error in trajectory relay");
+        has_active_goal_ = false;
+    }
 }
 
 void JointTrajectoryAction::watchdog(const ros::TimerEvent &e)

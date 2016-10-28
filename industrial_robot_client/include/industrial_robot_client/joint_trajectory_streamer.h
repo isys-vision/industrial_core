@@ -114,6 +114,7 @@ protected:
   TransferState state_;
   ros::Time streaming_start_;
   int min_buffer_size_;
+  ros::Publisher feedback_publisher_;
 };
 
 } //joint_trajectory_streamer
