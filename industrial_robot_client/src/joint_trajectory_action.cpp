@@ -86,6 +86,7 @@ void JointTrajectoryAction::relayStatusCB(const industrial_msgs::RobotStatusCons
         control_msgs::FollowJointTrajectoryResult rslt;
         rslt.error_code = control_msgs::FollowJointTrajectoryResult::GOAL_TOLERANCE_VIOLATED;
         active_goal_.setAborted(rslt, "Error in trajectory relay");
+        ros::Duration(0.1).sleep();
         has_active_goal_ = false;
     }
 }
