@@ -80,13 +80,13 @@ TYPE
 
 
 VAR
-	cfg_				: rosio_cfg_t   -- configuration
+	cfg_		in SHADOW	: rosio_cfg_t   -- configuration
 	pkt_				: io_pkt_t 
 	sock_				: ssock_t
 	sock_fd_			: FILE           -- file descriptor has to be declared here
 	stat_				: INTEGER
 	sleep_time_			: INTEGER
-	shutdwn_req_		: BOOLEAN	-- program abort requested status
+	shutdwn_req_			: BOOLEAN	-- program abort requested status
 	send_st_			: BOOLEAN	--Sendedauer  IO_STREAM_SUB
 
 
