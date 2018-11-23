@@ -122,6 +122,8 @@ bool TcpClient::makeConnect()
 
   if (!this->isConnected())
   {
+    this->createSocket();
+
     addrSize = sizeof(this->sockaddr_);
     rc = CONNECT(this->getSockHandle(), (sockaddr *)&this->sockaddr_, addrSize);
     if (this->SOCKET_FAIL != rc)
