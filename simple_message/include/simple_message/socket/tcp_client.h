@@ -76,7 +76,8 @@ public:
     // Overrides
     bool makeConnect();
 
-
+private:
+    bool createSocket();
 };
 
 } //tcp_client

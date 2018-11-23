@@ -54,11 +54,43 @@ TcpClient::~TcpClient()
 bool TcpClient::init(char *buff, int port_num)
 {
 
+  bool rtn = this->createSocket();
+
+  addrinfo *result;
+  addrinfo hints = {};
+
+  // Initialize address data structure
+  memset(&this->sockaddr_, 0, sizeof(this->sockaddr_));
+  this->sockaddr_.sin_family = AF_INET;
+
+  // Check for 'buff' as hostname, and use that, otherwise assume IP address
+  hints.ai_family = AF_INET;  // Allow IPv4
+  hints.ai_socktype = SOCK_STREAM;  // TCP socket
+  hints.ai_flags = 0;  // No flags
+  hints.ai_protocol = 0;  // Any protocol
+  hints.ai_canonname = NULL;
+  hints.ai_addr = NULL;
+  hints.ai_next = NULL;
+  if (0 == GETADDRINFO(buff, NULL, &hints, &result))
+  {
+    this->sockaddr_ = *((sockaddr_in *)result->ai_addr);
+  }
+  else
+  {
+    this->sockaddr_.sin_addr.s_addr = INET_ADDR(buff);
+  }
+  this->sockaddr_.sin_port = HTONS(port_num);
+
+  return rtn;
+}
+
+bool TcpClient::createSocket()
+{
   int rc;
   bool rtn;
   int disableNodeDelay = 1;
-  addrinfo *result;
-  addrinfo hints = {};
+
+  if (this->isConnected()) CLOSE(this->getSockHandle());
 
   rc = SOCKET(AF_INET, SOCK_STREAM, 0);
   if (this->SOCKET_FAIL != rc)
@@ -72,30 +104,7 @@ bool TcpClient::init(char *buff, int port_num)
       LOG_WARN("Failed to set no socket delay, sending data can be delayed by up to 250ms");
     }
 
-    // Initialize address data structure
-    memset(&this->sockaddr_, 0, sizeof(this->sockaddr_));
-    this->sockaddr_.sin_family = AF_INET;
-
-    // Check for 'buff' as hostname, and use that, otherwise assume IP address
-    hints.ai_family = AF_INET;  // Allow IPv4
-    hints.ai_socktype = SOCK_STREAM;  // TCP socket
-    hints.ai_flags = 0;  // No flags
-    hints.ai_protocol = 0;  // Any protocol
-    hints.ai_canonname = NULL;
-    hints.ai_addr = NULL;
-    hints.ai_next = NULL;
-    if (0 == GETADDRINFO(buff, NULL, &hints, &result))
-    {
-      this->sockaddr_ = *((sockaddr_in *)result->ai_addr);
-    }
-    else 
-    {
-      this->sockaddr_.sin_addr.s_addr = INET_ADDR(buff);
-    }
-    this->sockaddr_.sin_port = HTONS(port_num);
-
     rtn = true;
-
   }
   else
   {
