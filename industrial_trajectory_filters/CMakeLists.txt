@@ -2,10 +2,6 @@ cmake_minimum_required(VERSION 3.1.0)
 
 project(industrial_trajectory_filters)
 
-#enable c++11
-set (CMAKE_CXX_STANDARD 11)
-set (CMAKE_CXX_EXTENSIONS FALSE)
-
 find_package(catkin REQUIRED COMPONENTS moveit_ros_planning trajectory_msgs)
 
 catkin_package(
