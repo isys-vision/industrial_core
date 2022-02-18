@@ -43,8 +43,8 @@ const double JointTrajectoryAction::WATCHDOG_PERIOD_ = 1.0;
 const double JointTrajectoryAction::DEFAULT_GOAL_THRESHOLD_ = 0.01;
 
 JointTrajectoryAction::JointTrajectoryAction() :
-    action_server_(node_, "joint_trajectory_action", boost::bind(&JointTrajectoryAction::goalCB, this, _1),
-                   boost::bind(&JointTrajectoryAction::cancelCB, this, _1), false), has_active_goal_(false),
+    action_server_(node_, "joint_trajectory_action", boost::bind(&JointTrajectoryAction::goalCB, this, boost::placeholders::_1),
+                   boost::bind(&JointTrajectoryAction::cancelCB, this, boost::placeholders::_1), false), has_active_goal_(false),
                    controller_alive_(false), has_moved_once_(false), name_("joint_trajectory_action")
 {
   ros::NodeHandle pn("~");
