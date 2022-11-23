@@ -34,8 +34,6 @@ catkin_package(
     CFG_EXTRAS issue46_workaround.cmake
 )
 
-
-
 include_directories(include
   ${catkin_INCLUDE_DIRS}
 )
@@ -69,7 +67,7 @@ install(TARGETS ${PROJECT_NAME}_dummy DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATI
 #
 
 add_library(industrial_robot_client ${SRC_FILES})
-target_link_libraries(industrial_robot_client simple_message)
+target_link_libraries(industrial_robot_client simple_message ${catkin_LIBRARIES})
 
 add_library(industrial_robot_client_bswap ${SRC_FILES})
 target_link_libraries(industrial_robot_client_bswap simple_message_bswap)
