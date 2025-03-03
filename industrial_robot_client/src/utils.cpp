@@ -63,6 +63,7 @@ bool isWithinRange(const std::vector<double> & lhs, const std::vector<double> & 
       if (fabs(lhs[i] - rhs[i]) > fabs(half_range))
       {
         rtn = false;
+        ROS_INFO_STREAM("ERROR in axis " << i+1 << " value1: " << lhs[i] << " value2: " << rhs[i]);
         break;
       }
     }
@@ -133,7 +134,7 @@ bool isWithinRange(const std::vector<std::string> & keys, const std::map<std::st
 
   if ((keys.size() != rhs.size()) || (keys.size() != lhs.size()))
   {
-    ROS_ERROR_STREAM(__FUNCTION__ << "::Size mistmatch ::lhs size: " << lhs.size() <<
+    ROS_ERROR_STREAM(__FUNCTION__ << "::Size mismatch ::lhs size: " << lhs.size() <<
                      " rhs size: " << rhs.size() << " key size: " << keys.size());
 
     rtn = false;
@@ -149,6 +150,7 @@ bool isWithinRange(const std::vector<std::string> & keys, const std::map<std::st
     {
       if (fabs(lhs.at(keys[i]) - rhs.at(keys[i])) > fabs(half_range))
       {
+        ROS_INFO_STREAM("ERROR in axis " << keys[i] << " value1: " << lhs.at(keys[i]) << " value2: " << rhs.at(keys[i]));
         rtn = false;
         break;
       }
@@ -176,6 +178,13 @@ bool isWithinRange(const std::vector<std::string> & lhs_keys, const std::vector<
   {
     ROS_ERROR_STREAM(__FUNCTION__ << "::Key vectors are not similar");
     rtn = false;
+    for (auto& s : lhs_keys) {
+        ROS_DEBUG_STREAM("cur lhs: " << s);
+    }
+
+    for (auto& s : rhs_keys) {
+        ROS_DEBUG_STREAM("traj rhs: " << s);
+    }
   }
   return rtn;
 }
