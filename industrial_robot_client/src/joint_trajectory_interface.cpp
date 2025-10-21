@@ -32,6 +32,7 @@
 #include <algorithm>
 #include "industrial_robot_client/joint_trajectory_interface.h"
 #include "simple_message/joint_traj_pt.h"
+#include <industrial_robot_client/utils.h>
 #include "industrial_utils/param_utils.h"
 
 using namespace industrial_utils::param;
@@ -385,8 +386,12 @@ bool JointTrajectoryInterface::is_valid(const trajectory_msgs::JointTrajectory &
     }
 
     // check for valid timestamp
-    if ((i > 0) && (pt.time_from_start.toSec() == 0))
+    if ((i > 0) && (pt.time_from_start.toSec() == 0) &&
+        ((pt.time_from_start != traj.points[i - 1].time_from_start) || !industrial_robot_client::utils::isWithinRange(pt.positions, traj.points[i - 1].positions, 0.0001)))
+    {
+      // not an error if there additional copies after the starting point
       ROS_ERROR_RETURN(false, "Validation failed: Missing valid timestamp data for trajectory pt %d", i);
+    }
   }
 
   return true;
