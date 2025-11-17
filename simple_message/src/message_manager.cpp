@@ -44,6 +44,9 @@
 #include "unistd.h"
 #endif
 
+#include <chrono>
+#include <thread>
+
 using namespace industrial::smpl_msg_connection;
 using namespace industrial::message_handler;
 using namespace industrial::simple_message;
@@ -192,9 +195,11 @@ void MessageManager::spin()
   {
     this->spinOnce();
 
+    using namespace std::chrono_literals;
+
     // Throttle loop speed if waiting for a re-connection
     if (!this->getConnection()->isConnected())
-      mySleep(5);
+      std::this_thread::sleep_for(0.5s);
   }
 }
 
