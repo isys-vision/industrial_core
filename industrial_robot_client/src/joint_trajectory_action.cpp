@@ -229,9 +229,16 @@ void JointTrajectoryAction::controllerStateCB(const control_msgs::FollowJointTra
     //ROS_DEBUG_NAMED(name_, "No active goal, ignoring feedback");
     return;
   }
+
   if (current_traj_.points.empty())
   {
     ROS_INFO_NAMED(name_, "Current trajectory is empty, ignoring feedback");
+    return;
+  }
+
+  if (msg->joint_names.empty())
+  {
+    ROS_DEBUG_NAMED(name_, "Joint names list is empty, ignoring feedback from the controller (watchdog has been fed)");
     return;
   }
 
