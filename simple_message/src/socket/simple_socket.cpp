@@ -32,9 +32,11 @@
 #ifndef FLATHEADERS
 #include "simple_message/socket/simple_socket.h"
 #include "simple_message/log_wrapper.h"
+#include <chrono>
 #else
 #include "simple_socket.h"
 #include "log_wrapper.h"
+#include <chrono>
 #endif
 
 using namespace industrial::byte_array;
@@ -132,6 +134,106 @@ namespace industrial
               {
                 this->logSocketError("Socket received failed", rc, errno);
 		        remainBytes = 0;
+                rtn = false;
+                break;
+              }
+              else if (0 == rc)
+              {
+                LOG_WARN("Recieved zero bytes: %u", rc);
+		        remainBytes = 0;
+                rtn = false;
+                break;
+              }
+              else
+              {
+                remainBytes = remainBytes - rc;
+                LOG_COMM("Byte array receive, bytes read: %u, bytes reqd: %u, bytes left: %u",
+                    rc, num_bytes, remainBytes);
+                buffer.load(&this->buffer_, rc);
+                rtn = true;
+              }
+            }
+            else if(error)
+            {
+              LOG_ERROR("Socket poll returned an error");
+              rtn = false;
+              break;
+            }
+            else
+            {
+              LOG_ERROR("Uknown error from socket poll");
+              rtn = false;
+              break;
+            }
+          }
+          else
+          {
+            LOG_COMM("Socket poll timeout, trying again");
+          }
+        }
+      }
+      else
+      {
+        LOG_WARN("Not connected, bytes not sent");
+        rtn = false;
+      }
+
+      if (!rtn)
+      {
+        this->setConnected(false);
+      }
+      return rtn;
+    }
+
+    bool SimpleSocket::receiveBytesWithTimeout(ByteArray & buffer, shared_int num_bytes, double timeout)
+    {
+      int rc = this->SOCKET_FAIL;
+      bool rtn = false;
+      shared_int remainBytes = num_bytes;
+      bool ready, error;
+
+      // Reset the buffer (this is not required since the buffer length should
+      // ensure that we don't read any of the garbage that may be left over from
+      // a previous read), but it is good practice.
+
+      memset(&this->buffer_, 0, sizeof(this->buffer_));
+
+      // Doing a sanity check to determine if the byte array buffer is smaller than
+      // what can be received by the socket.
+      if (this->MAX_BUFFER_SIZE > buffer.getMaxBufferSize())
+      {
+        LOG_WARN("Socket buffer max size: %u, is larger than byte array buffer: %u",
+            this->MAX_BUFFER_SIZE, buffer.getMaxBufferSize());
+      }
+      if (this->isConnected())
+      {
+        buffer.init();
+        auto start_time = std::chrono::steady_clock::now();
+        double elapsed = 0.0;
+        while (remainBytes > 0)
+        {
+          auto current_time = std::chrono::steady_clock::now();
+          elapsed = std::chrono::duration<double>(current_time - start_time).count();
+          LOG_WARN("ELAPSED TIME: %f", elapsed);
+          if (elapsed >= timeout){
+            LOG_ERROR("Total receive timeout reached (%.3f s). %u bytes still pending.",
+                      timeout, remainBytes);
+            rtn = false;
+            break;
+          }
+          // Polling the socket results in an "interruptable" socket read.  This
+          // allows Control-C to break out of a socket read.  Without polling,
+          // a sig-term is required to kill a program in a socket read function.
+          if (this->rawPoll(this->SOCKET_POLL_TO, ready, error))
+          {
+            if(ready)
+            {
+              start_time = std::chrono::steady_clock::now();
+              rc = rawReceiveBytes(this->buffer_, remainBytes);
+              if (this->SOCKET_FAIL == rc)
+              {
+                this->logSocketError("Socket received failed", rc, errno);
+		            remainBytes = 0;
                 rtn = false;
                 break;
               }
