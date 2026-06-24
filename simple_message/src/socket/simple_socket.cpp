@@ -214,7 +214,6 @@ namespace industrial
         {
           auto current_time = std::chrono::steady_clock::now();
           elapsed = std::chrono::duration<double>(current_time - start_time).count();
-          LOG_WARN("ELAPSED TIME: %f", elapsed);
           if (elapsed >= timeout){
             LOG_ERROR("Total receive timeout reached (%.3f s). %u bytes still pending.",
                       timeout, remainBytes);
