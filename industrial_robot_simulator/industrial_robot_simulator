@@ -257,7 +257,7 @@ class IndustrialRobotSimulatorNode():
         self.lock = threading.Lock()
 
         # Publish rate (hz)
-        self.pub_rate = rospy.get_param('pub_rate', 10.0)
+        self.pub_rate = rospy.get_param('pub_rate', 30.0)
         rospy.loginfo("Setting publish rate (hz) based on parameter: %f", self.pub_rate)
 
         # Joint names
