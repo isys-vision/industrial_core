@@ -94,6 +94,8 @@ class MotionControllerSimulator():
         # Stop signal
         self.sig_stop = False
 
+        self.moving = threading.Event()
+
         # Motion thread
         self.motion_thread = threading.Thread(target=self._motion_worker)
         self.motion_thread.daemon = True
@@ -115,7 +117,7 @@ class MotionControllerSimulator():
     """
     """
     def is_in_motion(self):
-        return not self.motion_buffer.empty()
+        return not self.motion_buffer.empty() or self.moving.is_set()
 
     """
     """
@@ -157,6 +159,7 @@ class MotionControllerSimulator():
     """
     """
     def _clear_buffer(self):
+        # rospy.logdebug('_clear_buffer')
         with self.motion_buffer.mutex:
             self.motion_buffer.queue.clear()
 
@@ -168,10 +171,12 @@ class MotionControllerSimulator():
         with self.lock:
             if not self.sig_stop:
                 self.joint_positions = point.positions[:]
-                #rospy.loginfo('Moved to position: %s in %s', str(self.joint_positions), str(dur))
+                #rospy.logdebug('Moved to position: %s in %s', str(self.joint_positions), str(dur))
             else:
                 rospy.logdebug('Stopping motion immediately, clearing stop signal')
                 self.sig_stop = False
+                self.moving.clear()
+
 
     """
     """
@@ -188,6 +193,7 @@ class MotionControllerSimulator():
         while not self.sig_shutdown:
             try:
                 current_goal_point = self.motion_buffer.get()
+                self.moving.set()
 
                 # If the current time from start is less than the last, then it's a new trajectory
                 if current_goal_point.time_from_start < last_goal_point.time_from_start:
@@ -212,10 +218,14 @@ class MotionControllerSimulator():
                 self._move_to(current_goal_point, move_duration)
                 last_goal_point = copy.deepcopy(current_goal_point)
 
+                if not self.motion_buffer.qsize():
+                    # rospy.loginfo('clearing in_motion')
+                    self.moving.clear()
+
             except Exception as e:
                 rospy.logerr('Unexpected exception: %s', e)
 
-        rospy.logdebug("Shutting down motion controller")
+        rospy.loginfo("Shutting down motion controller")
 
 
 
@@ -248,7 +258,7 @@ class IndustrialRobotSimulatorNode():
 
         # Publish rate (hz)
         self.pub_rate = rospy.get_param('pub_rate', 10.0)
-        rospy.logdebug("Setting publish rate (hz) based on parameter: %f", self.pub_rate)
+        rospy.loginfo("Setting publish rate (hz) based on parameter: %f", self.pub_rate)
 
         # Joint names
         def_joint_names = ["joint_1", "joint_2", "joint_3", "joint_4", "joint_5", "joint_6"]
@@ -511,8 +521,8 @@ class IndustrialRobotSimulatorNode():
 
 if __name__ == '__main__':
     try:
-        rospy.loginfo('Starting joint_controller_simulator')
         controller = IndustrialRobotSimulatorNode()
+        rospy.loginfo('Started industrial_robot_simulator')
         rospy.spin()
     except rospy.ROSInterruptException:
         pass
