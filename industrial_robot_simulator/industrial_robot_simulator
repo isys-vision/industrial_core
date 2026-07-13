@@ -347,6 +347,9 @@ class IndustrialRobotSimulatorNode():
                 joint_state_msg.name = self.joint_names
                 joint_state_msg.position = self.motion_ctrl.get_joint_positions()
 
+                if rospy.is_shutdown():
+                    return
+
                 self.joint_state_pub.publish(joint_state_msg)
 
                 #Joint feedback
@@ -384,6 +387,10 @@ class IndustrialRobotSimulatorNode():
             msg.in_motion.val       = self.motion_ctrl.is_in_motion()
             msg.in_error.val        = TriState.FALSE
             msg.error_code          = 0
+
+            if rospy.is_shutdown():
+                return
+
             self.robot_status_pub.publish(msg)
 
         except Exception as e:
