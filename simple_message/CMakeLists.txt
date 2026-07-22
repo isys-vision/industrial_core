@@ -53,9 +53,19 @@ set(SRC_FILES src/byte_array.cpp
         src/messages/io_stream_sub_request_message.cpp
         src/messages/io_stream_sub_reply_message.cpp
 
-	src/simple_comms_fault_handler.cpp)
+ 	src/mikado_classes/mik_status.cpp
+ 	src/mikado_messages/mik_status_message.cpp
+
+  src/simple_comms_fault_handler.cpp)
 					
 set(UTEST_SRC_FILES test/utest.cpp test/utest_message.cpp)
+
+# Test executables for Mikado messages
+add_executable(simple_mikado_server test/simple_mikado_server.cpp)
+target_link_libraries(simple_mikado_server simple_message)
+
+add_executable(simple_mikado_client test/simple_mikado_client.cpp)
+target_link_libraries(simple_mikado_client simple_message)
 
 # The simple message make file builds two libraries: simple_message and
 # simple_message_byte_swapping.
