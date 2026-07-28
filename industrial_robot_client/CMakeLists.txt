@@ -97,6 +97,14 @@ target_link_libraries(motion_download_interface
   simple_message
   ${catkin_LIBRARIES})
 
+
+# Test executables for Mikado messages
+add_executable(simple_mikado_server src/simple_mikado_server.cpp)
+target_link_libraries(simple_mikado_server simple_message)
+
+add_executable(simple_mikado_client src/simple_mikado_client.cpp)
+target_link_libraries(simple_mikado_client simple_message)
+
 # The following executables(nodes) are for applications where the robot
 # controller and pc have different same byte order (i.e. byte swapping IS
 # required)
@@ -176,6 +184,10 @@ install(TARGETS
 install(
     DIRECTORY include/${PROJECT_NAME}/
     DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION})
+
+# install test server + client
+install(TARGETS simple_mikado_client simple_mikado_server
+    RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 
 foreach(dir config launch)
    install(DIRECTORY ${dir}/

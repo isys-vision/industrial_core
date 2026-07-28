@@ -96,4 +96,6 @@ namespace mik_action_id
   const int SET_CALIB_PLAN = 3100;
 }
 
+const int MIK_EOM_LEN = 4;
+const int MIK_EOM = -1; // by loading -1 into the buffer, we get 4 FF Bytes, that mark the end of message
 #endif // MIKADO_TYPES_H

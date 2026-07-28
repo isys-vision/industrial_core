@@ -68,8 +68,7 @@ bool MikStatusMessage::init(industrial::simple_message::SimpleMessage & msg)
   ByteArray data = msg.getData();
   this->init();
   this->setCommType(msg.getCommType());
-
-  if (data.unload(this->status_))
+  if (this->unload(&data))
   {
     rtn = true;
   }
@@ -88,7 +87,7 @@ void MikStatusMessage::init(industrial::mik_status::MikStatus & status)
 
 void MikStatusMessage::init()
 {
-  this->setMessageType(mik_msg_type::ROBOT_STATUS);
+  this->setMessageType(mik_msg_type::MIK_STATUS);
   this->status_.init();
 }
 
@@ -98,7 +97,12 @@ bool MikStatusMessage::load(ByteArray *buffer)
   LOG_COMM("Executing mik status message load");
   if (buffer->load(this->status_))
   {
-    rtn = true;
+    if(buffer->load(MIK_EOM)){
+      rtn = true;
+    } else {
+      rtn = false;
+      LOG_ERROR("Failed to load mik status data");
+    }
   }
   else
   {
@@ -112,13 +116,16 @@ bool MikStatusMessage::unload(ByteArray *buffer)
 {
   bool rtn = false;
   LOG_COMM("Executing mik status message unload");
+  int EOM;
 
-  if (buffer->unload(this->status_))
-  {
-    rtn = true;
-  }
-  else
-  {
+  if (buffer->unload(EOM)){
+    if (buffer->unload(this->status_)) {
+      rtn = true;
+    } else {
+      rtn = false;
+      LOG_ERROR("Failed to unload mik status data");
+    }
+  } else {
     rtn = false;
     LOG_ERROR("Failed to unload mik status data");
   }

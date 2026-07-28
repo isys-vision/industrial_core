@@ -121,11 +121,11 @@ bool MikStatus::unload(ByteArray *buffer)
   bool rtn = false;
   LOG_COMM("Executing mik status unload");
 
-  if (buffer->unload(this->mik_state_) &&
-      buffer->unload(this->camera_state_) &&
-      buffer->unload(this->comm_state_) &&
+  if (buffer->unload(this->running_state_) &&
       buffer->unload(this->robot_state_) &&
-      buffer->unload(this->running_state_))
+      buffer->unload(this->comm_state_) &&
+      buffer->unload(this->camera_state_) &&
+      buffer->unload(this->mik_state_))
   {
     rtn = true;
   }

@@ -4,7 +4,7 @@
   
   <!-- Mikado Status Test Server -->
   <node name="mikado_server" 
-        pkg="simple_message" 
+        pkg="industrial_robot_client" 
         type="simple_mikado_server" 
         output="screen">
     <param name="port" type="int" value="11000"/>
@@ -12,7 +12,7 @@
   
   <!-- Mikado Status Test Client -->
   <node name="mikado_client" 
-        pkg="simple_message" 
+        pkg="industrial_robot_client" 
         type="simple_mikado_client" 
         args="127.0.0.1"
         output="screen">
