@@ -36,6 +36,7 @@
 #include "simple_message/simple_message.h"
 #include "simple_message/simple_serialize.h"
 #include "simple_message/shared_types.h"
+#include <stdio.h>
 #else
 #include "simple_message.h"
 #include "simple_serialize.h"
@@ -179,6 +180,16 @@ public:
   void setRunningState(RunningState running_state)
   {
     this->running_state_ = running_state;
+  }
+
+  void print()
+  {
+    printf("Printing Mik Status");
+    printf("  Mik State:      %d\n", this->getMikState());
+    printf("  Camera State:   %d\n", this->getCameraState());
+    printf("  Comm State:     %d\n", this->getCommState());
+    printf("  Robot State:    %d\n", this->getRobotState());
+    printf("  Running State:  %d\n", this->getRunningState());
   }
 
   /**

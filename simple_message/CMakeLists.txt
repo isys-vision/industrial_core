@@ -43,20 +43,22 @@ set(SRC_FILES src/byte_array.cpp
 	src/messages/joint_traj_pt_message.cpp
 	src/messages/joint_traj_pt_full_message.cpp
 	src/messages/robot_status_message.cpp
-        src/messages/io_stream_pub_message.cpp
-        src/messages/io_read_request_message.cpp
-        src/messages/io_read_reply_message.cpp
-        src/messages/io_write_request_message.cpp
-        src/messages/io_write_reply_message.cpp
-        src/messages/io_info_request_message.cpp
-        src/messages/io_info_reply_message.cpp
-        src/messages/io_stream_sub_request_message.cpp
-        src/messages/io_stream_sub_reply_message.cpp
+    src/messages/io_stream_pub_message.cpp
+    src/messages/io_read_request_message.cpp
+    src/messages/io_read_reply_message.cpp
+    src/messages/io_write_request_message.cpp
+    src/messages/io_write_reply_message.cpp
+    src/messages/io_info_request_message.cpp
+    src/messages/io_info_reply_message.cpp
+    src/messages/io_stream_sub_request_message.cpp
+    src/messages/io_stream_sub_reply_message.cpp
 
- 	src/mikado_classes/mik_status.cpp
- 	src/mikado_messages/mik_status_message.cpp
+    src/mikado_classes/mik_status.cpp
+    src/mikado_messages/mik_status_message.cpp
+    src/mikado_classes/mik_action_trigger.cpp
+    src/mikado_messages/mik_action_trigger_message.cpp
 
-  src/simple_comms_fault_handler.cpp)
+    src/simple_comms_fault_handler.cpp)
 					
 set(UTEST_SRC_FILES test/utest.cpp test/utest_message.cpp)
 

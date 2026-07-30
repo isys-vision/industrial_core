@@ -13,12 +13,13 @@ add_definitions(-DROS=1)           #build using ROS libraries
 add_definitions(-DLINUXSOCKETS=1)  #build using LINUX SOCKETS libraries
 
 set(SRC_FILES src/joint_relay_handler.cpp
-              src/robot_status_relay_handler.cpp
-              src/joint_trajectory_downloader.cpp
-              src/joint_trajectory_streamer.cpp
-              src/joint_trajectory_interface.cpp
-              src/robot_state_interface.cpp
-              src/utils.cpp)
+               src/robot_status_relay_handler.cpp
+               src/joint_trajectory_downloader.cpp
+               src/joint_trajectory_streamer.cpp
+               src/joint_trajectory_interface.cpp
+               src/robot_state_interface.cpp
+               src/utils.cpp
+               src/message_generator.cpp)
 
 # NOTE: The libraries generated this package are not included in the catkin_package
 # macro because libraries must be explicitly linked in projects that depend on this
@@ -100,10 +101,10 @@ target_link_libraries(motion_download_interface
 
 # Test executables for Mikado messages
 add_executable(simple_mikado_server src/simple_mikado_server.cpp)
-target_link_libraries(simple_mikado_server simple_message)
+target_link_libraries(simple_mikado_server industrial_robot_client simple_message ${catkin_LIBRARIES})
 
 add_executable(simple_mikado_client src/simple_mikado_client.cpp)
-target_link_libraries(simple_mikado_client simple_message)
+target_link_libraries(simple_mikado_client industrial_robot_client simple_message ${catkin_LIBRARIES})
 
 # The following executables(nodes) are for applications where the robot
 # controller and pc have different same byte order (i.e. byte swapping IS
