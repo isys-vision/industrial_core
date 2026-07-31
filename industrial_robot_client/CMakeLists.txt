@@ -19,7 +19,8 @@ set(SRC_FILES src/joint_relay_handler.cpp
                src/joint_trajectory_interface.cpp
                src/robot_state_interface.cpp
                src/utils.cpp
-               src/message_generator.cpp)
+               src/message_generator.cpp
+               src/message_decoder.cpp)
 
 # NOTE: The libraries generated this package are not included in the catkin_package
 # macro because libraries must be explicitly linked in projects that depend on this

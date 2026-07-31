@@ -34,6 +34,7 @@
 #include "simple_message/shared_types.h"
 #include "simple_message/byte_array.h"
 #include "simple_message/log_wrapper.h"
+#include <algorithm>
 #else
 #include "mik_action_trigger.h"
 #include "shared_types.h"
@@ -227,6 +228,8 @@ bool MikActionTrigger::unload(ByteArray *buffer)
       }
       this->additional_real_args_.push_back(val);
     }
+    std::reverse(this->additional_real_args_.begin(),
+             this->additional_real_args_.end());
     
     // Unload additional int args
     for (shared_int i = this->int_args_count_ - 1; i >= 0; i--)
@@ -240,6 +243,8 @@ bool MikActionTrigger::unload(ByteArray *buffer)
       }
       this->additional_int_args_.push_back(val);
     }
+    std::reverse(this->additional_int_args_.begin(),
+             this->additional_int_args_.end());
     
     rtn = true;
   }

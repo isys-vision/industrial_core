@@ -9,6 +9,7 @@
 #include "simple_message/mikado_classes/mik_status.h"
 #include "simple_message/socket/tcp_server.h"
 #include "simple_message/smpl_msg_connection.h"
+#include "industrial_robot_client/message_decoder.h"
 
 using namespace industrial::simple_message;
 using namespace industrial::mik_status_message;
@@ -59,48 +60,17 @@ int main(int argc, char **argv)
     printf("Reply Code: %d\n", msg.getReplyCode());
     printf("Data Length: %d bytes\n", msg.getDataLength());
 
-    // Check message type and respond
-    if (msg.getMessageType() == mik_msg_type::MIK_STATUS)
-    {
-      MikStatusMessage status_msg;
-      if (status_msg.init(msg))
-      {
-        MikStatus &status = status_msg.status_;
+    SimpleMessage reply = industrial_robot_client::decodeAndRepackMessage(msg);
 
-        printf("\n[SERVER] --- Mikado Status ---\n");
-        printf("  Mik State:      %d\n", status.getMikState());
-        printf("  Camera State:   %d\n", status.getCameraState());
-        printf("  Comm State:     %d\n", status.getCommState());
-        printf("  Robot State:    %d\n", status.getRobotState());
-        printf("  Running State:  %d\n", status.getRunningState());
-
-        // Create reply with same status
-        MikStatus reply_status;
-        reply_status.init(status.getMikState(), status.getCameraState(),
-                         status.getCommState(), status.getRobotState(),
-                         status.getRunningState());
-
-        MikStatusMessage reply_msg;
-        reply_msg.init(reply_status);
-
-        SimpleMessage reply;
-        reply_msg.toTopic(reply);
-
-        // Send reply
-        if (tcp_server.sendMsg(reply))
-        {
-          printf("\n[SERVER] --- Sent Reply ---\n");
-          printf("  Mik State:      %d\n", reply_status.getMikState());
-          printf("  Camera State:   %d\n", reply_status.getCameraState());
-          printf("  Comm State:     %d\n", reply_status.getCommState());
-          printf("  Robot State:    %d\n", reply_status.getRobotState());
-          printf("  Running State:  %d\n", reply_status.getRunningState());
-        }
-        else
-        {
-          printf("[SERVER] Failed to send reply\n");
-        }
-      }
+    if (tcp_server.sendMsg(reply)){
+      printf("\n[SERVER] --- Sent Reply ---\n");
+      printf("Message Type: %d\n", reply.getMessageType());
+      printf("Comm Type: %d\n", reply.getCommType());
+      printf("Reply Code: %d\n", reply.getReplyCode());
+      printf("Data Length: %d bytes\n", reply.getDataLength());
+    }
+    else {
+      printf("[SERVER] Failed to send reply\n");
     }
 
     // Small delay before next message

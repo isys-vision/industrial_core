@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "industrial_robot_client/message_generator.h"
+#include "industrial_robot_client/message_decoder.h"
 #include "simple_message/mikado_messages/mikado_types.h"
 #include "simple_message/mikado_messages/mik_status_message.h"
 #include "simple_message/mikado_classes/mik_status.h"
@@ -47,61 +47,64 @@ using namespace industrial::mik_status;
 namespace industrial_robot_client
 {
 
-void createMikStatusMessage(SimpleMessage& simple_message)
-{
-  MikStatus status;
-  status.init(industrial::mik_status::MikStates::MS_FALSE,
-            industrial::mik_status::MikStates::CS_TRUE,
-            industrial::mik_status::MikStates::CoS_UNKNOWN,
-            industrial::mik_status::MikStates::RS_TRUE,
-            industrial::mik_status::MikStates::RuS_TRUE);
-  MikStatusMessage msg;
-  msg.init(status);
-  msg.toTopic(simple_message);
-  // print out message for debugging
-  printf("\n[CLIENT] --- Created Mik Status Message ---\n");
-  msg.status_.print();
+SimpleMessage decodeAndRepackMessage(SimpleMessage& simple_message){
+  switch(simple_message.getMessageType()){
+    case mik_msg_type::MIK_STATUS:{
+      return decodeAndRepackMikStatusMessage(simple_message);
+    }
+    case mik_msg_type::ACTION_TRIG:{
+      return decodeAndRepackActionTriggerMessage(simple_message);
+    }
+    default:{
+      printf("[Message Decoder] Message Type with ID %d not known to decoder.", simple_message.getMessageType());
+    }
+  }
 }
 
-void createActionTriggerMessage(SimpleMessage& simple_message)
+SimpleMessage decodeAndRepackMikStatusMessage(SimpleMessage& simple_message)
 {
-  MikActionTrigger action_trigger;
-  
-  // Initialize with dummy action trigger data
-  // Action ID: 1001 (find container action)
-  // Camera ID: 1, Product ID: 100, Gripper ID: 200
-  // ROI ID: 10, Pickzone ID: 5
-  // Additional int args: [1, 2, 3]
-  // Additional real args: [1.5, 2.5, 3.5]
-  
-  std::vector<industrial::shared_types::shared_int> int_args;
-  int_args.push_back(1);
-  int_args.push_back(2);
-  int_args.push_back(3);
-  
-  std::vector<industrial::shared_types::shared_real> real_args;
-  real_args.push_back(-113.5);
-  real_args.push_back(1.5);
-  real_args.push_back(2.5);
-  real_args.push_back(3.5);
+  MikStatusMessage status_msg;
+  if (status_msg.init(simple_message)){
+    MikStatus &status = status_msg.status_;
 
-  printf("Sizes befre int: %d | real: %d", int_args.size(), real_args.size());
-  
-  action_trigger.init(1001,  // action_id (FIND_CONTAINER)
-                      1,     // camera_id
-                      100,   // product_id
-                      200,   // gripper_id
-                      10,    // roi_id
-                      5,     // pickzone_id
-                      int_args,
-                      real_args);
-  
-  MikActionTriggerMessage msg;
-  msg.init(action_trigger);
-  msg.toTopic(simple_message);
-  // print out message for debugging
-  printf("\n[CLIENT] --- Created Action Trigger Message ---\n");
-  msg.action_trigger_.print();
+    printf("\n[SERVER] --- Mikado Status ---\n");
+    status.print();
+
+    MikStatus reply_status;
+    reply_status.init(status.getMikState(), status.getCameraState(),
+                      status.getCommState(), status.getRobotState(),
+                      status.getRunningState());
+
+    MikStatusMessage reply_msg;
+    reply_msg.init(reply_status);
+
+    SimpleMessage reply;
+    reply_msg.toTopic(reply);
+    return reply;
+  }
+  printf("[Message Decoder] Failed to decode Status Message");
+}
+
+SimpleMessage decodeAndRepackActionTriggerMessage(SimpleMessage& simple_message)
+{
+  MikActionTriggerMessage action_trigger_msg;
+  if (action_trigger_msg.init(simple_message)){
+    MikActionTrigger &action_trigger = action_trigger_msg.action_trigger_;
+
+    printf("\n[SERVER] --- Mikado Action Trigger ---\n");
+    action_trigger.print();
+
+    MikActionTrigger reply_action_trigger;
+    reply_action_trigger.copyFrom(action_trigger);
+
+    MikActionTriggerMessage reply_msg;
+    reply_msg.init(reply_action_trigger);
+
+    SimpleMessage reply;
+    reply_msg.toTopic(reply);
+    return reply;
+  }
+  printf("[Message Decoder] Failed to decode Action Trigger Message");
 }
 
 }
