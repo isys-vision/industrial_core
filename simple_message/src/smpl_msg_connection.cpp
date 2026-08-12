@@ -123,6 +123,53 @@ bool SmplMsgConnection::receiveMsg(SimpleMessage & message)
 }
 
 
+bool SmplMsgConnection::receiveMsgWithTimeout(SimpleMessage & message, double timeout)
+{
+  ByteArray lengthBuffer;
+  ByteArray msgBuffer;
+  int length;
+
+  bool rtn = false;
+
+
+  rtn = this->receiveBytesWithTimeout(lengthBuffer, message.getLengthSize(), timeout);
+
+  if (rtn)
+  {
+    rtn = lengthBuffer.unload(length);
+    LOG_COMM("Message length: %d", length);
+
+    if (rtn)
+    {
+      rtn = this->receiveBytes(msgBuffer, length);
+
+      if (rtn)
+      {
+        rtn = message.init(msgBuffer);
+      }
+      else
+      {
+        LOG_ERROR("Failed to initialize message");
+        rtn = false;
+      }
+
+    }
+    else
+    {
+      LOG_ERROR("Failed to receive message");
+      rtn = false;
+    }
+  }
+  else
+  {
+    LOG_ERROR("Failed to receive message length");
+    rtn = false;
+  }
+
+  return rtn;
+}
+
+
 
 bool SmplMsgConnection::sendAndReceiveMsg(SimpleMessage & send, SimpleMessage & recv, bool verbose)
 {	

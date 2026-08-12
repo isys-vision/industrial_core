@@ -83,6 +83,18 @@ public:
    */
   virtual bool receiveMsg(industrial::simple_message::SimpleMessage & message);
   
+    /**
+   * \brief Receives a message using the data connection but has timeout
+   *
+   * \param populated with received message
+   * 
+   * \param timeout in seconds
+   *
+   * \return true if successful
+   */
+  virtual bool receiveMsgWithTimeout(industrial::simple_message::SimpleMessage & message, double timeout);
+  
+  
   /**
    * \brief Performs a complete send and receive.  This is helpful when sending
    * a message that requires and explicit reply
@@ -135,6 +147,9 @@ private:
    */
   virtual bool receiveBytes(industrial::byte_array::ByteArray & buffer,
                             industrial::shared_types::shared_int num_bytes) =0;
+
+  virtual bool receiveBytesWithTimeout(industrial::byte_array::ByteArray & buffer,
+                            industrial::shared_types::shared_int num_bytes, double timeout) =0;
 
 };
 
