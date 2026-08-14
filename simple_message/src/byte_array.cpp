@@ -144,6 +144,11 @@ bool ByteArray::load(shared_bool value)
   return this->load(&value, sizeof(shared_bool));
 }
 
+bool ByteArray::load(shared_char value)
+{
+  return this->load(&value, sizeof(shared_char));
+}
+
 bool ByteArray::load(shared_real value)
 {
 #ifdef BYTE_SWAPPING
@@ -233,6 +238,13 @@ bool ByteArray::load(void* value, const shared_int byte_size)
 bool ByteArray::unload(shared_bool & value)
 {
   shared_bool rtn = this->unload(&value, sizeof(shared_bool));
+  return rtn;
+
+}
+
+bool ByteArray::unload(shared_char & value)
+{
+  shared_char rtn = this->unload(&value, sizeof(shared_char));
   return rtn;
 
 }

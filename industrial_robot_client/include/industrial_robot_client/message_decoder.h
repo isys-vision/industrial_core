@@ -37,6 +37,8 @@
 #include "simple_message/mikado_classes/mik_status.h"
 #include "simple_message/mikado_messages/mik_action_trigger_message.h"
 #include "simple_message/mikado_classes/mik_action_trigger.h"
+#include "simple_message/mikado_messages/mik_simple_action_reply_message.h"
+#include "simple_message/mikado_classes/mik_simple_action_reply.h"
 
 namespace industrial_robot_client
 {
@@ -61,7 +63,17 @@ industrial::simple_message::SimpleMessage decodeAndRepackActionTriggerMessage(in
  *
  * \param simple_message The SimpleMessage to decode
  */
+industrial::simple_message::SimpleMessage decodeAndRepackMikSimpleActionReplyMessage(industrial::simple_message::SimpleMessage& simple_message);
+
+
+/**
+ * \brief Decodes and and repacks messages
+ *
+ * \param simple_message The SimpleMessage to decode
+ */
 industrial::simple_message::SimpleMessage decodeAndRepackMessage(industrial::simple_message::SimpleMessage& simple_message);
+
+
 
 
 } // namespace industrial_robot_client

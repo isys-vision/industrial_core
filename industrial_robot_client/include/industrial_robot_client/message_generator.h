@@ -37,9 +37,19 @@
 #include "simple_message/mikado_classes/mik_status.h"
 #include "simple_message/mikado_messages/mik_action_trigger_message.h"
 #include "simple_message/mikado_classes/mik_action_trigger.h"
+#include "simple_message/mikado_messages/mik_simple_action_reply_message.h"
+#include "simple_message/mikado_classes/mik_simple_action_reply.h"
 
 namespace industrial_robot_client
 {
+
+/**
+ * \brief Creates a message with dummy data
+ *
+ * \param simple_message The SimpleMessage to populate
+ * \param int Msg type to generate
+ */
+bool createMikMessage(industrial::simple_message::SimpleMessage& simple_message, int msg_type);
 
 /**
  * \brief Creates a MikStatus message with dummy data
@@ -54,6 +64,13 @@ void createMikStatusMessage(industrial::simple_message::SimpleMessage& simple_me
  * \param simple_message The SimpleMessage to populate
  */
 void createActionTriggerMessage(industrial::simple_message::SimpleMessage& simple_message);
+
+/**
+ * \brief Creates a MikSimpleActionReply message with dummy data
+ *
+ * \param simple_message The SimpleMessage to populate
+ */
+void createSimpleActionReplyMessage(industrial::simple_message::SimpleMessage& simple_message);
 
 } // namespace industrial_robot_client
 

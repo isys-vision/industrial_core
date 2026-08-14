@@ -57,6 +57,8 @@ set(SRC_FILES src/byte_array.cpp
     src/mikado_messages/mik_status_message.cpp
     src/mikado_classes/mik_action_trigger.cpp
     src/mikado_messages/mik_action_trigger_message.cpp
+    src/mikado_classes/mik_simple_action_reply.cpp
+    src/mikado_messages/mik_simple_action_reply_message.cpp
 
     src/simple_comms_fault_handler.cpp)
 					

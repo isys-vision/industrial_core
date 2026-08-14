@@ -35,6 +35,8 @@
 #include "simple_message/mikado_classes/mik_status.h"
 #include "simple_message/mikado_messages/mik_action_trigger_message.h"
 #include "simple_message/mikado_classes/mik_action_trigger.h"
+#include "simple_message/mikado_messages/mik_simple_action_reply_message.h"
+#include "simple_message/mikado_classes/mik_simple_action_reply.h"
 #include "simple_message/socket/tcp_client.h"
 #include "simple_message/smpl_msg_connection.h"
 
@@ -42,6 +44,8 @@ using namespace industrial::simple_message;
 using namespace industrial::mik_status_message;
 using namespace industrial::mik_action_trigger_message;
 using namespace industrial::mik_action_trigger;
+using namespace industrial::mik_simple_action_reply_message;
+using namespace industrial::mik_simple_action_reply;
 using namespace industrial::mik_status;
 
 namespace industrial_robot_client
@@ -54,6 +58,9 @@ SimpleMessage decodeAndRepackMessage(SimpleMessage& simple_message){
     }
     case mik_msg_type::ACTION_TRIG:{
       return decodeAndRepackActionTriggerMessage(simple_message);
+    }
+    case mik_msg_type::SIMPLE_REPLY:{
+      return decodeAndRepackMikSimpleActionReplyMessage(simple_message);
     }
     default:{
       printf("[Message Decoder] Message Type with ID %d not known to decoder.", simple_message.getMessageType());
@@ -103,6 +110,28 @@ SimpleMessage decodeAndRepackActionTriggerMessage(SimpleMessage& simple_message)
     return reply;
   }
   printf("[Message Decoder] Failed to decode Action Trigger Message");
+}
+
+SimpleMessage decodeAndRepackMikSimpleActionReplyMessage(SimpleMessage& simple_message)
+{
+  MikSimpleActionReplyMessage simple_action_reply_msg;
+  if (simple_action_reply_msg.init(simple_message)){
+    MikSimpleActionReply &simple_action_reply = simple_action_reply_msg.mik_simple_action_reply_;
+
+    printf("\n[SERVER] --- Mikado Simple Action Reply ---\n");
+    simple_action_reply.print();
+
+    MikSimpleActionReply reply_simple_action_reply;
+    reply_simple_action_reply.copyFrom(simple_action_reply);
+
+    MikSimpleActionReplyMessage reply_msg;
+    reply_msg.init(reply_simple_action_reply);
+
+    SimpleMessage reply;
+    reply_msg.toTopic(reply);
+    return reply;
+  }
+  printf("[Message Decoder] Failed to decode Simple Action Reply Message");
 }
 
 }

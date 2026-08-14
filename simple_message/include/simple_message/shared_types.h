@@ -69,6 +69,7 @@ typedef double shared_real;
 #endif
 
 typedef bool shared_bool;
+typedef char shared_char;
 
 
 } // namespace shared_types

@@ -35,6 +35,8 @@
 #include "simple_message/mikado_classes/mik_status.h"
 #include "simple_message/mikado_messages/mik_action_trigger_message.h"
 #include "simple_message/mikado_classes/mik_action_trigger.h"
+#include "simple_message/mikado_messages/mik_simple_action_reply_message.h"
+#include "simple_message/mikado_classes/mik_simple_action_reply.h"
 #include "simple_message/socket/tcp_client.h"
 #include "simple_message/smpl_msg_connection.h"
 
@@ -43,9 +45,38 @@ using namespace industrial::mik_status_message;
 using namespace industrial::mik_action_trigger_message;
 using namespace industrial::mik_action_trigger;
 using namespace industrial::mik_status;
+using namespace industrial::mik_simple_action_reply;
+using namespace industrial::mik_simple_action_reply_message;
+
 
 namespace industrial_robot_client
 {
+
+bool createMikMessage(SimpleMessage& simple_message, int msg_type){
+  switch(msg_type){
+    case mik_msg_type::ACTION_TRIG:
+    {
+      industrial_robot_client::createActionTriggerMessage(simple_message);
+      break;
+    }
+    case mik_msg_type::MIK_STATUS:
+    {
+      industrial_robot_client::createMikStatusMessage(simple_message);
+      break;
+    }
+    case mik_msg_type::SIMPLE_REPLY:
+    {
+      industrial_robot_client::createSimpleActionReplyMessage(simple_message);
+      break;
+    }
+    default:
+    {
+      printf("[Message Generator] Unkown message type.");
+      return false;
+    }
+  }
+  return true;
+}
 
 void createMikStatusMessage(SimpleMessage& simple_message)
 {
@@ -103,6 +134,36 @@ void createActionTriggerMessage(SimpleMessage& simple_message)
   // print out message for debugging
   printf("\n[CLIENT] --- Created Action Trigger Message ---\n");
   msg.action_trigger_.print();
+}
+
+void createSimpleActionReplyMessage(SimpleMessage& simple_message)
+{
+  MikSimpleActionReply action_reply;
+  
+  std::vector<industrial::shared_types::shared_int> int_args;
+  int_args.push_back(1);
+  int_args.push_back(2);
+  int_args.push_back(3);
+  
+  std::vector<industrial::shared_types::shared_real> real_args;
+  real_args.push_back(-113.5);
+  real_args.push_back(1.5);
+  real_args.push_back(2.5);
+  real_args.push_back(3.5);
+  
+  action_reply.init(123,  // action_id (FIND_CONTAINER)
+                      9920,   // request_id
+                      -2,     // action_status
+                      int_args,
+                      real_args,
+                    "Error 2: This action does not exists");
+  
+  MikSimpleActionReplyMessage msg;
+  msg.init(action_reply);
+  msg.toTopic(simple_message);
+  // print out message for debugging
+  printf("\n[CLIENT] --- Created Simple Action Reply Message ---\n");
+  msg.mik_simple_action_reply_.print();
 }
 
 }

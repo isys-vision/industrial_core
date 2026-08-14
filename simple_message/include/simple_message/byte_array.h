@@ -150,6 +150,17 @@ public:
    */
   bool load(industrial::shared_types::shared_bool value);
 
+
+  /**
+   * \brief loads a char into the byte array
+   *
+   * \param value to load
+   *
+   * \return true on success, false otherwise (max array size exceeded).
+   * Value not loaded
+   */
+  bool load(industrial::shared_types::shared_char value);
+
   /**
    * \brief loads a float on the byte array.  If byte swapping is
    * enabled, then the bytes are swapped (this assumes a common float
@@ -213,6 +224,15 @@ public:
    * \return true on success, false otherwise (array is empty)
    */
   bool unload(industrial::shared_types::shared_bool &value);
+
+  /**
+   * \brief unloads a char value from the byte array
+   *
+   * \param value value to unload
+   *
+   * \return true on success, false otherwise (array is empty)
+   */
+  bool unload(industrial::shared_types::shared_char &value);
 
   /**
    * \brief unloads a double value from the byte array. If byte swapping is
