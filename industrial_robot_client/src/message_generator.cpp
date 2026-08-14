@@ -88,6 +88,7 @@ void createActionTriggerMessage(SimpleMessage& simple_message)
   printf("Sizes befre int: %d | real: %d", int_args.size(), real_args.size());
   
   action_trigger.init(1001,  // action_id (FIND_CONTAINER)
+                      222,   // request_id
                       1,     // camera_id
                       100,   // product_id
                       200,   // gripper_id

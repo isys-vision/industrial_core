@@ -61,6 +61,7 @@ MikActionTrigger::~MikActionTrigger(void)
 void MikActionTrigger::init()
 {
   this->action_id_ = 0;
+  this->request_id_ = 0;
   this->camera_id_ = 0;
   this->product_id_ = 0;
   this->gripper_id_ = 0;
@@ -72,13 +73,14 @@ void MikActionTrigger::init()
   this->real_args_count_ = 0;
 }
 
-void MikActionTrigger::init(shared_types::shared_int action_id, shared_types::shared_int camera_id,
+void MikActionTrigger::init(shared_types::shared_int action_id, shared_types::shared_int request_id, shared_types::shared_int camera_id,
                             shared_types::shared_int product_id, shared_types::shared_int gripper_id,
                             shared_types::shared_int roi_id, shared_types::shared_int pickzone_id,
                             std::vector<shared_types::shared_int> additional_int_args,
                             std::vector<shared_types::shared_real> additional_real_args)
 {
   this->setActionId(action_id);
+  this->setRequestId(request_id);
   this->setCameraId(camera_id);
   this->setProductId(product_id);
   this->setGripperId(gripper_id);
@@ -91,6 +93,7 @@ void MikActionTrigger::init(shared_types::shared_int action_id, shared_types::sh
 void MikActionTrigger::copyFrom(MikActionTrigger &src)
 {
   this->action_id_ = src.action_id_;
+  this->request_id_ = src.request_id_;
   this->camera_id_ = src.camera_id_;
   this->product_id_ = src.product_id_;
   this->gripper_id_ = src.gripper_id_;
@@ -105,6 +108,7 @@ void MikActionTrigger::copyFrom(MikActionTrigger &src)
 bool MikActionTrigger::operator==(MikActionTrigger &rhs)
 {
   if (this->action_id_ != rhs.action_id_ ||
+      this->request_id_ != rhs.request_id_ ||
       this->camera_id_ != rhs.camera_id_ ||
       this->product_id_ != rhs.product_id_ ||
       this->gripper_id_ != rhs.gripper_id_ ||
@@ -154,6 +158,7 @@ bool MikActionTrigger::load(ByteArray *buffer)
   shared_int real_count = 0;
   
   if (buffer->load(this->action_id_) &&
+      buffer->load(this->request_id_) &&
       buffer->load(this->camera_id_) &&
       buffer->load(this->product_id_) &&
       buffer->load(this->gripper_id_) &&
@@ -259,6 +264,7 @@ bool MikActionTrigger::unload(ByteArray *buffer)
       buffer->unload(this->gripper_id_) &&
       buffer->unload(this->product_id_) &&
       buffer->unload(this->camera_id_) &&
+      buffer->unload(this->request_id_) &&
       buffer->unload(this->action_id_))){
     rtn = false;
     LOG_ERROR("Failed to unload mik action trigger data");
@@ -270,9 +276,9 @@ bool MikActionTrigger::unload(ByteArray *buffer)
 
 unsigned int MikActionTrigger::byteLength()
 {
-  // Calculate size: 6 IDs + 2 * counts + additional int args + additional real args
+  // Calculate size: 7 IDs + 2 * counts + additional int args + additional real args
   
-  return (6 + 2) * sizeof(shared_int) +
+  return (7 + 2) * sizeof(shared_int) +
          this->getAdditionalIntCount() * sizeof(shared_int) +
          this->getAdditionalRealCount() * sizeof(shared_real);
 }

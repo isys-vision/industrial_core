@@ -71,9 +71,7 @@ SimpleMessage decodeAndRepackMikStatusMessage(SimpleMessage& simple_message)
     status.print();
 
     MikStatus reply_status;
-    reply_status.init(status.getMikState(), status.getCameraState(),
-                      status.getCommState(), status.getRobotState(),
-                      status.getRunningState());
+    reply_status.copyFrom(status);
 
     MikStatusMessage reply_msg;
     reply_msg.init(reply_status);

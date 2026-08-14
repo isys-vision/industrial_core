@@ -80,6 +80,7 @@ public:
    * \brief Initializes a full mik action trigger
    *
    * \param action_id Action identifier
+   * \param request_id Request identifier
    * \param camera_id Camera identifier
    * \param product_id Product identifier
    * \param gripper_id Gripper identifier
@@ -88,16 +89,21 @@ public:
    * \param additional_int_args Vector of additional integer arguments (max 10)
    * \param additional_real_args Vector of additional real arguments (max 10)
    */
-  void init(shared_types::shared_int action_id, shared_types::shared_int camera_id,
-            shared_types::shared_int product_id, shared_types::shared_int gripper_id,
-            shared_types::shared_int roi_id, shared_types::shared_int pickzone_id,
-            std::vector<shared_types::shared_int> additional_int_args,
+  void init(shared_types::shared_int action_id, shared_types::shared_int request_id,
+            shared_types::shared_int camera_id, shared_types::shared_int product_id, 
+            shared_types::shared_int gripper_id, shared_types::shared_int roi_id, 
+            shared_types::shared_int pickzone_id, std::vector<shared_types::shared_int> additional_int_args,
             std::vector<shared_types::shared_real> additional_real_args);
 
   // Getters for action IDs
   shared_types::shared_int getActionId() const
   {
     return this->action_id_;
+  }
+
+  shared_types::shared_int getRequestId() const
+  {
+    return this->request_id_;
   }
 
   shared_types::shared_int getCameraId() const
@@ -140,6 +146,11 @@ public:
   void setActionId(shared_types::shared_int action_id)
   {
     this->action_id_ = action_id;
+  }
+
+  void setRequestId(shared_types::shared_int request_id)
+  {
+    this->request_id_ = request_id;
   }
 
   void setCameraId(shared_types::shared_int camera_id)
@@ -213,6 +224,7 @@ void print()
 {
   printf("Printing Action Trigger\n");
   printf("  Action ID:      %d\n", this->getActionId());
+  printf("  Request ID:      %d\n", this->getRequestId());
   printf("  Camera ID:      %d\n", this->getCameraId());
   printf("  Product ID:     %d\n", this->getProductId());
   printf("  Gripper ID:     %d\n", this->getGripperId());
@@ -263,6 +275,11 @@ private:
    * \brief action identifier
    */
   industrial::shared_types::shared_int action_id_;
+
+  /**
+   * \brief request identifier
+   */
+  industrial::shared_types::shared_int request_id_;
 
   /**
    * \brief camera identifier
