@@ -219,7 +219,7 @@ bool MikSimpleActionReply::unload(ByteArray *buffer)
       if (!buffer->unload(val))
       {
         rtn = false;
-        LOG_ERROR("Failed to unload error msg char %f", i);
+        LOG_ERROR("Failed to unload error msg char %d", i);
         return false;
       }
       this->error_msg_.push_back(val);
@@ -233,7 +233,7 @@ bool MikSimpleActionReply::unload(ByteArray *buffer)
       if (!buffer->unload(val))
       {
         rtn = false;
-        LOG_ERROR("Failed to unload additional real arg %f", i);
+        LOG_ERROR("Failed to unload additional real arg %d", i);
         return false;
       }
       this->additional_real_args_.push_back(val);

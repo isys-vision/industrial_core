@@ -43,35 +43,12 @@
 namespace industrial_robot_client
 {
 
-/**
- * \brief Decodes and print a MikStatus message
- *
- * \param simple_message The SimpleMessage to decode
- */
 industrial::simple_message::SimpleMessage decodeAndRepackMikStatusMessage(industrial::simple_message::SimpleMessage& simple_message);
-
-/**
- * \brief Decodes and prints a MikActionTrigger message
- *
- * \param simple_message The SimpleMessage to decode
- */
 industrial::simple_message::SimpleMessage decodeAndRepackActionTriggerMessage(industrial::simple_message::SimpleMessage& simple_message);
-
-
-/**
- * \brief Decodes and and repacks messages
- *
- * \param simple_message The SimpleMessage to decode
- */
 industrial::simple_message::SimpleMessage decodeAndRepackMikSimpleActionReplyMessage(industrial::simple_message::SimpleMessage& simple_message);
-
-
-/**
- * \brief Decodes and and repacks messages
- *
- * \param simple_message The SimpleMessage to decode
- */
 industrial::simple_message::SimpleMessage decodeAndRepackMessage(industrial::simple_message::SimpleMessage& simple_message);
+industrial::simple_message::SimpleMessage decodeAndRepackMikConnInfoMessage(industrial::simple_message::SimpleMessage& simple_message);
+industrial::simple_message::SimpleMessage decodeAndRepackMikTrajPtMessage(industrial::simple_message::SimpleMessage& simple_message);
 
 
 

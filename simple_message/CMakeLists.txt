@@ -59,6 +59,10 @@ set(SRC_FILES src/byte_array.cpp
     src/mikado_messages/mik_action_trigger_message.cpp
     src/mikado_classes/mik_simple_action_reply.cpp
     src/mikado_messages/mik_simple_action_reply_message.cpp
+    src/mikado_classes/mik_connection_info.cpp
+    src/mikado_messages/mik_connection_info_message.cpp
+    src/mikado_classes/mik_dynamic_joints_traj_pt.cpp
+    src/mikado_messages/mik_dynamic_joints_traj_pt_message.cpp
 
     src/simple_comms_fault_handler.cpp)
 					

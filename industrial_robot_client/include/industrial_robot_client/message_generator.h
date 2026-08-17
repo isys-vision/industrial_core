@@ -43,34 +43,14 @@
 namespace industrial_robot_client
 {
 
-/**
- * \brief Creates a message with dummy data
- *
- * \param simple_message The SimpleMessage to populate
- * \param int Msg type to generate
- */
+void printMsg(industrial::simple_message::SimpleMessage& simpleMsg);
 bool createMikMessage(industrial::simple_message::SimpleMessage& simple_message, int msg_type);
-
-/**
- * \brief Creates a MikStatus message with dummy data
- *
- * \param simple_message The SimpleMessage to populate
- */
 void createMikStatusMessage(industrial::simple_message::SimpleMessage& simple_message);
-
-/**
- * \brief Creates a MikActionTrigger message with dummy data
- *
- * \param simple_message The SimpleMessage to populate
- */
 void createActionTriggerMessage(industrial::simple_message::SimpleMessage& simple_message);
-
-/**
- * \brief Creates a MikSimpleActionReply message with dummy data
- *
- * \param simple_message The SimpleMessage to populate
- */
 void createSimpleActionReplyMessage(industrial::simple_message::SimpleMessage& simple_message);
+void createConnectionInfoMessage(industrial::simple_message::SimpleMessage& simple_message);
+void createTrajPtMessage(industrial::simple_message::SimpleMessage& simple_message);
+
 
 } // namespace industrial_robot_client
 

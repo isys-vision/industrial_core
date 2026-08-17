@@ -210,7 +210,7 @@ void print()
   printf("  Action Status:  %d\n", this->getActionStatus());
   // Print additional int args
   const std::vector<shared_types::shared_int>& intArgs = this->getAdditionalIntArgs();
-  printf("  Int Args (count=%d): [", intArgs.size());
+  printf("  Int Args (count=%ld): [", intArgs.size());
   for (size_t i = 0; i < intArgs.size(); i++)
   {
     printf("%d", intArgs[i]);
@@ -220,7 +220,7 @@ void print()
   
   // Print additional real args
   const std::vector<shared_types::shared_real>& realArgs = this->getAdditionalRealArgs();
-  printf("  Real Args (count=%d): [", realArgs.size());
+  printf("  Real Args (count=%ld): [", realArgs.size());
   for (size_t i = 0; i < realArgs.size(); i++)
   {
     printf("%f", realArgs[i]);

@@ -31,14 +31,19 @@
 
 #include "industrial_robot_client/message_decoder.h"
 #include "simple_message/mikado_messages/mikado_types.h"
+#include "simple_message/socket/tcp_client.h"
+#include "simple_message/smpl_msg_connection.h"
 #include "simple_message/mikado_messages/mik_status_message.h"
 #include "simple_message/mikado_classes/mik_status.h"
 #include "simple_message/mikado_messages/mik_action_trigger_message.h"
 #include "simple_message/mikado_classes/mik_action_trigger.h"
 #include "simple_message/mikado_messages/mik_simple_action_reply_message.h"
 #include "simple_message/mikado_classes/mik_simple_action_reply.h"
-#include "simple_message/socket/tcp_client.h"
-#include "simple_message/smpl_msg_connection.h"
+#include "simple_message/mikado_messages/mik_connection_info_message.h"
+#include "simple_message/mikado_classes/mik_connection_info.h"
+#include "simple_message/mikado_classes/mik_simple_action_reply.h"
+#include "simple_message/mikado_messages/mik_dynamic_joints_traj_pt_message.h"
+#include "simple_message/mikado_classes/mik_dynamic_joints_traj_pt.h"
 
 using namespace industrial::simple_message;
 using namespace industrial::mik_status_message;
@@ -46,7 +51,11 @@ using namespace industrial::mik_action_trigger_message;
 using namespace industrial::mik_action_trigger;
 using namespace industrial::mik_simple_action_reply_message;
 using namespace industrial::mik_simple_action_reply;
+using namespace industrial::mik_conn_info_message;
+using namespace industrial::mik_conn_info;
 using namespace industrial::mik_status;
+using namespace industrial::mik_dynamic_joint_traj_pt_msg;
+using namespace industrial::mik_dynamic_joint_traj_pt;
 
 namespace industrial_robot_client
 {
@@ -62,8 +71,15 @@ SimpleMessage decodeAndRepackMessage(SimpleMessage& simple_message){
     case mik_msg_type::SIMPLE_REPLY:{
       return decodeAndRepackMikSimpleActionReplyMessage(simple_message);
     }
+    case mik_msg_type::CONN_INFO:{
+      return decodeAndRepackMikConnInfoMessage(simple_message);
+    }
+    case mik_msg_type::TRAJ_PT:{
+      return decodeAndRepackMikTrajPtMessage(simple_message);
+    }
     default:{
       printf("[Message Decoder] Message Type with ID %d not known to decoder.", simple_message.getMessageType());
+      exit(-1);
     }
   }
 }
@@ -88,6 +104,7 @@ SimpleMessage decodeAndRepackMikStatusMessage(SimpleMessage& simple_message)
     return reply;
   }
   printf("[Message Decoder] Failed to decode Status Message");
+  exit(-1);
 }
 
 SimpleMessage decodeAndRepackActionTriggerMessage(SimpleMessage& simple_message)
@@ -110,6 +127,7 @@ SimpleMessage decodeAndRepackActionTriggerMessage(SimpleMessage& simple_message)
     return reply;
   }
   printf("[Message Decoder] Failed to decode Action Trigger Message");
+  exit(-1);
 }
 
 SimpleMessage decodeAndRepackMikSimpleActionReplyMessage(SimpleMessage& simple_message)
@@ -132,6 +150,52 @@ SimpleMessage decodeAndRepackMikSimpleActionReplyMessage(SimpleMessage& simple_m
     return reply;
   }
   printf("[Message Decoder] Failed to decode Simple Action Reply Message");
+  exit(-1);
+}
+
+SimpleMessage decodeAndRepackMikConnInfoMessage(SimpleMessage& simple_message)
+{
+  MikadoConnectionInfoMessage conn_info_msg;
+  if (conn_info_msg.init(simple_message)){
+    MikadoConnectionInfo &conn_info = conn_info_msg.connection_info_;
+
+    printf("\n[SERVER] --- Mikado Connection Info ---\n");
+    conn_info.print();
+
+    MikadoConnectionInfo reply_conn_info;
+    reply_conn_info.copyFrom(conn_info);
+
+    MikadoConnectionInfoMessage reply_msg;
+    reply_msg.init(reply_conn_info);
+
+    SimpleMessage reply;
+    reply_msg.toTopic(reply);
+    return reply;
+  }
+  printf("[Message Decoder] Failed to decode Connection Info Message");
+  exit(-1);
+}
+
+SimpleMessage decodeAndRepackMikTrajPtMessage(SimpleMessage& simple_message){
+  MikadoDynamicJointsTrajPtMessage traj_pt_msg;
+  if (traj_pt_msg.init(simple_message)){
+    MikadoDynamicJointsTrajPt &traj_pt = traj_pt_msg.point_;
+
+    printf("\n[SERVER] --- Mikado Trajectory Point ---\n");
+    traj_pt.print();
+
+    MikadoDynamicJointsTrajPt reply_traj_pt;
+    reply_traj_pt.copyFrom(traj_pt);
+
+    MikadoDynamicJointsTrajPtMessage reply_msg;
+    reply_msg.init(reply_traj_pt);
+
+    SimpleMessage reply;
+    reply_msg.toTopic(reply);
+    return reply;
+  }
+  printf("[Message Decoder] Failed to decode Trajectory Point Message");
+  exit(-1);
 }
 
 }

@@ -5,12 +5,6 @@
 
 #include "simple_message/simple_message.h"
 #include "simple_message/mikado_messages/mikado_types.h"
-#include "simple_message/mikado_messages/mik_status_message.h"
-#include "simple_message/mikado_classes/mik_status.h"
-#include "simple_message/mikado_messages/mik_action_trigger_message.h"
-#include "simple_message/mikado_classes/mik_action_trigger.h"
-#include "simple_message/mikado_messages/mik_simple_action_reply_message.h"
-#include "simple_message/mikado_classes/mik_simple_action_reply.h"
 #include "simple_message/socket/tcp_client.h"
 #include "simple_message/smpl_msg_connection.h"
 #include "industrial_robot_client/message_generator.h"
@@ -29,9 +23,10 @@ using namespace industrial_robot_client;
 
 #define SERVER_PORT 11000
 
-
+const int MSG_TYPE_TO_SEND = mik_msg_type::TRAJ_PT; 
+//const int MSG_TYPE_TO_SEND = mik_msg_type::CONN_INFO; 
 //const int MSG_TYPE_TO_SEND = mik_msg_type::SIMPLE_REPLY; 
-const int MSG_TYPE_TO_SEND = mik_msg_type::ACTION_TRIG; 
+//const int MSG_TYPE_TO_SEND = mik_msg_type::ACTION_TRIG; 
 
 
 SimpleMessage getMessage(){
@@ -41,41 +36,6 @@ SimpleMessage getMessage(){
       exit(EXIT_FAILURE);
   }
   return simple_msg;
-}
-
-void printMsg(SimpleMessage& simpleMsg){
-  printf("\n--------------\n[CLIENT] Printing msg:\n");
-  switch(simpleMsg.getMessageType()){
-    case mik_msg_type::MIK_STATUS:
-    {
-      MikStatusMessage reply_status_msg;
-      if (reply_status_msg.init(simpleMsg)){
-        reply_status_msg.status_.print();
-      }
-      break;
-    }
-    case mik_msg_type::ACTION_TRIG:
-    {
-      MikActionTriggerMessage action_trigger_msg;
-      if (action_trigger_msg.init(simpleMsg)){
-        action_trigger_msg.action_trigger_.print();
-      }
-      break;
-    }
-    case mik_msg_type::SIMPLE_REPLY:
-    {
-      MikSimpleActionReplyMessage simple_action_reply_msg;
-      if (simple_action_reply_msg.init(simpleMsg)){
-        simple_action_reply_msg.mik_simple_action_reply_.print();
-      }
-      break;
-    }
-    default:
-    {
-      printf("[CLIENT] Unknown message type, cannot print.");
-    }
-  }
-  printf("\n--------------\n");
 }
 
 int main(int argc, char **argv)

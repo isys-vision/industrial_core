@@ -37,6 +37,11 @@
 #include "simple_message/mikado_classes/mik_action_trigger.h"
 #include "simple_message/mikado_messages/mik_simple_action_reply_message.h"
 #include "simple_message/mikado_classes/mik_simple_action_reply.h"
+#include "simple_message/mikado_messages/mik_connection_info_message.h"
+#include "simple_message/mikado_classes/mik_connection_info.h"
+#include "simple_message/mikado_messages/mik_dynamic_joints_traj_pt_message.h"
+#include "simple_message/mikado_classes/mik_dynamic_joints_traj_pt.h"
+#include "simple_message/mikado_classes/mik_connection_info.h"
 #include "simple_message/socket/tcp_client.h"
 #include "simple_message/smpl_msg_connection.h"
 
@@ -47,10 +52,64 @@ using namespace industrial::mik_action_trigger;
 using namespace industrial::mik_status;
 using namespace industrial::mik_simple_action_reply;
 using namespace industrial::mik_simple_action_reply_message;
-
+using namespace industrial::mik_conn_info;
+using namespace industrial::mik_conn_info_message;
+using namespace industrial::mik_dynamic_joint_traj_pt;
+using namespace industrial::mik_dynamic_joint_traj_pt_msg;
 
 namespace industrial_robot_client
 {
+
+void printMsg(SimpleMessage& simpleMsg){
+  printf("\n--------------\n Printing msg:\n");
+  switch(simpleMsg.getMessageType()){
+    case mik_msg_type::MIK_STATUS:
+    {
+      MikStatusMessage reply_status_msg;
+      if (reply_status_msg.init(simpleMsg)){
+        reply_status_msg.status_.print();
+      }
+      break;
+    }
+    case mik_msg_type::ACTION_TRIG:
+    {
+      MikActionTriggerMessage action_trigger_msg;
+      if (action_trigger_msg.init(simpleMsg)){
+        action_trigger_msg.action_trigger_.print();
+      }
+      break;
+    }
+    case mik_msg_type::SIMPLE_REPLY:
+    {
+      MikSimpleActionReplyMessage simple_action_reply_msg;
+      if (simple_action_reply_msg.init(simpleMsg)){
+        simple_action_reply_msg.mik_simple_action_reply_.print();
+      }
+      break;
+    }
+    case mik_msg_type::CONN_INFO:
+    {
+      MikadoConnectionInfoMessage conn_info_msg;
+      if (conn_info_msg.init(simpleMsg)){
+        conn_info_msg.connection_info_.print();
+      }
+      break;
+    }
+    case mik_msg_type::TRAJ_PT:
+    {
+      MikadoDynamicJointsTrajPtMessage traj_pt_msg;
+      if (traj_pt_msg.init(simpleMsg)){
+        traj_pt_msg.point_.print();
+      }
+      break;
+    }
+    default:
+    {
+      printf("[CLIENT] Unknown message type, cannot print.");
+    }
+  }
+  printf("\n--------------\n");
+}
 
 bool createMikMessage(SimpleMessage& simple_message, int msg_type){
   switch(msg_type){
@@ -67,6 +126,16 @@ bool createMikMessage(SimpleMessage& simple_message, int msg_type){
     case mik_msg_type::SIMPLE_REPLY:
     {
       industrial_robot_client::createSimpleActionReplyMessage(simple_message);
+      break;
+    }
+    case mik_msg_type::CONN_INFO:
+    {
+      industrial_robot_client::createConnectionInfoMessage(simple_message);
+      break;
+    }
+     case mik_msg_type::TRAJ_PT:
+    {
+      industrial_robot_client::createTrajPtMessage(simple_message);
       break;
     }
     default:
@@ -115,8 +184,6 @@ void createActionTriggerMessage(SimpleMessage& simple_message)
   real_args.push_back(1.5);
   real_args.push_back(2.5);
   real_args.push_back(3.5);
-
-  printf("Sizes befre int: %d | real: %d", int_args.size(), real_args.size());
   
   action_trigger.init(1001,  // action_id (FIND_CONTAINER)
                       222,   // request_id
@@ -164,6 +231,42 @@ void createSimpleActionReplyMessage(SimpleMessage& simple_message)
   // print out message for debugging
   printf("\n[CLIENT] --- Created Simple Action Reply Message ---\n");
   msg.mik_simple_action_reply_.print();
+}
+
+void createConnectionInfoMessage(SimpleMessage& simple_message)
+{
+  MikadoConnectionInfo conn_info;
+  
+  conn_info.init(mik_product_type::PICK, mik_rotation_convention::KUKA, 6, 1, 3, 4, true, false, true);
+  
+  MikadoConnectionInfoMessage msg;
+  msg.init(conn_info);
+  msg.toTopic(simple_message);
+  // print out message for debugging
+  printf("\n[CLIENT] --- Created Connection Info Message ---\n");
+  msg.connection_info_.print();
+}
+
+void createTrajPtMessage(SimpleMessage& simple_message)
+{
+  MikadoDynamicJointsTrajPt traj_pt;
+
+  std::vector<industrial::shared_types::shared_real> positions;
+  positions.push_back(-113.5);
+  positions.push_back(1.5);
+  positions.push_back(2.5);
+  positions.push_back(36.5);
+  positions.push_back(33.5);
+  positions.push_back(0.5);
+  
+  traj_pt.init(12, 2, positions, 13.6, mik_motion_type::JOINT, mik_traj_type::REGULAR, false);
+  
+  MikadoDynamicJointsTrajPtMessage msg;
+  msg.init(traj_pt);
+  msg.toTopic(simple_message);
+  // print out message for debugging
+  printf("\n[CLIENT] --- Created Trajectory Point Message ---\n");
+  msg.point_.print();
 }
 
 }

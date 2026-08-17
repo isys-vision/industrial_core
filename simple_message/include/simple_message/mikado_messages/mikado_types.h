@@ -14,19 +14,55 @@ namespace mik_comm_type
   const int SERVICE_REPLY = 3;
 }
 
+// --- Product Types ---
+namespace mik_product_type
+{
+  const int INVALID = 0;
+  const int FIND = 1;
+  const int SELECT = 2;
+  const int PICK = 3;
+  const int CONTROL = 4;
+}
+
+// --- Product Types ---
+namespace mik_rotation_convention
+{
+  const int INVALID = 0;
+  const int R_XYZ = 1; // default, used by Stäubli robots
+    const int STAUBLI = R_XYZ;
+  const int S_XYZ = 2; // used by Fanuc, Yaskawa, UR, Fruitcore, Mitsubishi and Techman robots
+    const int FANUC = S_XYZ;
+    const int YASKAWA = S_XYZ;
+    const int UR_1 = S_XYZ;
+    const int FRUITCORE = S_XYZ;
+    const int MITSUBISHI = S_XYZ;
+    const int TECHMAN = S_XYZ;
+  const int R_ZYX = 3; // used by Kuka, ABB and Nachi robots
+    const int KUKA = R_ZYX;
+    const int ABB = R_ZYX;
+    const int NACHI = R_ZYX;
+  const int R_ZYZ = 4; // used by Doosan, Kawasaki and Omron robots
+    const int DOOSAN = R_ZYZ;
+    const int KAWASAKI = R_ZYZ;
+    const int OMRON = R_ZYZ;
+  const int UVW = 5; // used by UR robots
+    const int UR_2 = UVW;
+
+}
+
 // --- Mikado Message Types ---
 namespace mik_msg_type
 {
   const int INVALID = 0;
   const int ACTION_TRIG = 65000; // action trigger
   const int MIK_STATUS = 65001; // mikado_status
-  const int TRAJ_PT = 65002; // trajectory pt
+  const int TRAJ_PT = 65010; // trajectory pt
   const int TRAJ = 65003; // set of trajectory pts
   const int CALIB_RES = 65004; // calibration result
   const int ROBOT_INFO = 65005; // robot info / robot details
   const int CALIB_PLAN = 65006; // calibration plan
   const int ROBOT_STATUS = 65007; // robot status 
-  const int CONN_INFO = 65007; // connection info
+  const int CONN_INFO = 65008; // connection info
   const int SIMPLE_REPLY = 65100; // simple reply
   const int REPLY_STATUS = 65101; // status reply
   const int REPLY_POSE = 65102; // pose reply

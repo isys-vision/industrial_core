@@ -5,8 +5,6 @@
 
 #include "simple_message/simple_message.h"
 #include "simple_message/mikado_messages/mikado_types.h"
-#include "simple_message/mikado_messages/mik_status_message.h"
-#include "simple_message/mikado_classes/mik_status.h"
 #include "simple_message/socket/tcp_server.h"
 #include "simple_message/smpl_msg_connection.h"
 #include "industrial_robot_client/message_decoder.h"
