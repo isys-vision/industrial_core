@@ -45,6 +45,7 @@ namespace industrial_robot_client
 
 industrial::simple_message::SimpleMessage decodeAndRepackMikStatusMessage(industrial::simple_message::SimpleMessage& simple_message);
 industrial::simple_message::SimpleMessage decodeAndRepackActionTriggerMessage(industrial::simple_message::SimpleMessage& simple_message);
+industrial::simple_message::SimpleMessage decodeAndReplyToActionTriggerMessage(industrial::simple_message::SimpleMessage& simple_message);
 industrial::simple_message::SimpleMessage decodeAndRepackMikSimpleActionReplyMessage(industrial::simple_message::SimpleMessage& simple_message);
 industrial::simple_message::SimpleMessage decodeAndRepackMessage(industrial::simple_message::SimpleMessage& simple_message);
 industrial::simple_message::SimpleMessage decodeAndRepackMikConnInfoMessage(industrial::simple_message::SimpleMessage& simple_message);

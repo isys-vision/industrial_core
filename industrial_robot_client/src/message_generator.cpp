@@ -218,9 +218,9 @@ void createSimpleActionReplyMessage(SimpleMessage& simple_message)
   real_args.push_back(2.5);
   real_args.push_back(3.5);
   
-  action_reply.init(123,  // action_id (FIND_CONTAINER)
-                      9920,   // request_id
-                      -2,     // action_status
+  action_reply.init(1000,  // action_id (FIND_CONTAINER)
+                      1,   // request_id
+                      0,     // action_status
                       int_args,
                       real_args,
                     "Error 2: This action does not exists");

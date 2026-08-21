@@ -130,6 +130,31 @@ SimpleMessage decodeAndRepackActionTriggerMessage(SimpleMessage& simple_message)
   exit(-1);
 }
 
+SimpleMessage decodeAndReplyToActionTriggerMessage(SimpleMessage& simple_message)
+{
+  MikActionTriggerMessage action_trigger_msg;
+  if (action_trigger_msg.init(simple_message)){
+    MikActionTrigger &action_trigger = action_trigger_msg.action_trigger_;
+
+    MikSimpleActionReply reply_simple_action_reply;
+    reply_simple_action_reply.init();
+    reply_simple_action_reply.setActionId(action_trigger.getActionId());
+    reply_simple_action_reply.setRequestId(action_trigger.getRequestId());
+    reply_simple_action_reply.setActionStatus(1500); // EKI interprest ints as unsigned, therefore use positive status range for errors
+    std::string error_msg = "[ActionTrigger] Error: OH NO, AN ERROR OCCURED!"; 
+    reply_simple_action_reply.setErrorMsg(error_msg);
+
+    MikSimpleActionReplyMessage reply_msg;
+    reply_msg.init(reply_simple_action_reply);
+
+    SimpleMessage reply;
+    reply_msg.toTopic(reply);
+    return reply;
+  }
+  printf("[Message Decoder] Failed to decode Action Trigger Message");
+  exit(-1);
+}
+
 SimpleMessage decodeAndRepackMikSimpleActionReplyMessage(SimpleMessage& simple_message)
 {
   MikSimpleActionReplyMessage simple_action_reply_msg;
