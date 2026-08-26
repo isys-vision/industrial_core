@@ -20,7 +20,10 @@ set(SRC_FILES src/joint_relay_handler.cpp
                src/robot_state_interface.cpp
                src/utils.cpp
                src/message_generator.cpp
-               src/message_decoder.cpp)
+               src/message_decoder.cpp
+               src/message_processor.cpp
+               src/mikado_action_manager.cpp
+               src/mikado_utils.cpp)
 
 # NOTE: The libraries generated this package are not included in the catkin_package
 # macro because libraries must be explicitly linked in projects that depend on this
@@ -107,6 +110,11 @@ target_link_libraries(simple_mikado_server industrial_robot_client simple_messag
 add_executable(simple_mikado_client src/simple_mikado_client.cpp)
 target_link_libraries(simple_mikado_client industrial_robot_client simple_message ${catkin_LIBRARIES})
 
+# Mikado action client
+
+add_executable(mikado_action_client src/mikado_action_client.cpp)
+target_link_libraries(mikado_action_client industrial_robot_client simple_message ${catkin_LIBRARIES})
+
 # The following executables(nodes) are for applications where the robot
 # controller and pc have different same byte order (i.e. byte swapping IS
 # required)
@@ -188,7 +196,7 @@ install(
     DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION})
 
 # install test server + client
-install(TARGETS simple_mikado_client simple_mikado_server
+install(TARGETS simple_mikado_client simple_mikado_server mikado_action_client
     RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 
 foreach(dir config launch)

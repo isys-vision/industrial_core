@@ -117,6 +117,7 @@ namespace mik_action_id
   const int GET_GRASP_POSE = 2007;
   const int GET_CALIB_PLAN = 2100;
   const int GET_CALIB_RESULTS = 2101;
+  const int GET_CONNECTION_INFO = 2102;
   const int GET_MIK_STATUS = 2999;
 
   // Setters (set commands)
@@ -130,6 +131,32 @@ namespace mik_action_id
   const int SET_GRIPPER_OPEN = 3008;
   const int SET_GRIPPER_CLOSE = 3010;
   const int SET_CALIB_PLAN = 3100;
+}
+
+// here we can collect all possible action status
+// should there be mapping to error msg as well?
+namespace mik_action_status{
+  namespace success{
+  const int OK = 0;
+  }
+  namespace error{
+  const int GENERAL_ERROR = 1500;
+  const int NO_CAMERA_WITH_THIS_ID = 1501;
+  }
+}
+
+namespace mik_connection_info{
+  struct ConnectionInfo{
+    int mikado_product;
+    int rotation_convention;
+    int number_of_axis_traj_pts;
+    int number_of_ext_axis_traj_pts;
+    int number_of_axis_status;
+    int number_of_ext_axis_status;
+    bool traj_pt_is_radian;
+    bool status_is_radian;
+    bool is_status_is_moving;
+  };
 }
 
 const int MIK_EOM_LEN = 4;

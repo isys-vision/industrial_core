@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<launch>
+
+  <node name="mikado_action_client" 
+        pkg="industrial_robot_client" 
+        type="mikado_action_client" 
+        args="192.168.0.97 54600"
+        output="screen">
+  </node>
+
+</launch>
+
