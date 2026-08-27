@@ -119,13 +119,35 @@ bool SimpleMessageProcessor::handleAction(const MikActionTrigger& trigger, MikSi
   switch(trigger.getActionId()){
     case mik_action_id::CAPTURE_PC:{
       // a ros implementation could make a ros action call here and publish the result once ready
-      printf("[Message Processor] Click click, an point cloud has been captured\n");
+      printf("[Message Processor] A point cloud has been captured\n");
       createSimpleActionReplySuccess(trigger, action_reply);
       return true;
     }
     case mik_action_id::GET_CONNECTION_INFO:{
       // this is asked by the robot after a connection has been established
       printf("[Message Processor] Robot asks for connection info\n");
+      createSimpleActionReplySuccess(trigger, action_reply);
+      return true;
+    }
+    case mik_action_id::FIND_PRODUCT:{
+      printf("[Message Processor] Product search triggered by robot. Only confirming this to the robot, robot will ask for pose seperately.\n");
+      createSimpleActionReplySuccess(trigger, action_reply);
+      return true;
+    }
+    case mik_action_id::LOAD_RECIPE:{
+      printf("[Message Processor] Loading recipe #%d\n", trigger.getAdditionalIntArgs()[0]);
+      createSimpleActionReplySuccess(trigger, action_reply);
+      return true;
+    }
+    case mik_action_id::FIND_CONTAINER:{
+      printf("[Message Processor] Finding container and returning dummy pose\n");
+      createSimpleActionReplySuccess(trigger, action_reply);
+      std::vector<shared_real> pose = {123.3, 345.6, 789.0, 12.4, -41.7, 115.8};
+      action_reply.setAdditionalRealArgs(pose);
+      return true;
+    }
+    case mik_action_id::FIND_PICKS:{
+      printf("[Message Processor] Starting pick search");
       createSimpleActionReplySuccess(trigger, action_reply);
       return true;
     }

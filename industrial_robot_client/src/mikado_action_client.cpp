@@ -25,7 +25,7 @@ int main(int argc, char **argv)
   printf("--- STARTING MIKADO ACTION CLIENT ---\n");
   if (argc < 3)
   {
-    printf("[CLIENT] Usage: %s <server_ip> <port>\n", argv[0]);
+    printf("[Action Client] Usage: %s <server_ip> <port>\n", argv[0]);
     exit(EXIT_FAILURE);
   }
   std::string robot_ip = argv[1];

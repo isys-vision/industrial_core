@@ -101,6 +101,7 @@ namespace mik_action_id
   const int FIND_PRODUCT = 1002;
   const int FIND_PICKS = 1003;
   const int COUNT_PTS_IN_ROI = 1004;
+  const int LOAD_RECIPE = 1005;
   const int START_CALIB = 1100;
   const int CAPTURE_CALIB = 1101;
   const int FINISH_CALIB = 1102;
