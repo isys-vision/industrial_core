@@ -48,7 +48,7 @@ public:
    *
    * \return true on success, false otherwise
    */
-  virtual bool process(SimpleMessage& in_msg, SimpleMessage& out_msg) = 0;
+  virtual bool process(SimpleMessage& in_msg, SimpleMessage& out_msg, std::vector<SimpleMessage>& add_replies) = 0;
 
   virtual ConnectionInfo getConnectionInfo(){
     return connection_params_;
@@ -76,12 +76,12 @@ public:
    *
    * \return true on success, false otherwise
    */
-  virtual bool process(SimpleMessage& in_msg, SimpleMessage& reply);
+  virtual bool process(SimpleMessage& in_msg, SimpleMessage& reply, std::vector<SimpleMessage>& add_replies);
 
 private:
-  bool handleStatus(SimpleMessage& in_msg, SimpleMessage& reply);
-  bool handleActionTrigger(SimpleMessage& in_msg, SimpleMessage& reply);
-  bool handleAction(const MikActionTrigger& trigger, MikSimpleActionReply& action_reply);
+  bool handleStatus(SimpleMessage& in_msg, SimpleMessage& reply, std::vector<SimpleMessage>& add_replies);
+  bool handleActionTrigger(SimpleMessage& in_msg, SimpleMessage& reply, std::vector<SimpleMessage>& add_replies);
+  bool handleAction(const MikActionTrigger& trigger, MikSimpleActionReply& action_reply, std::vector<SimpleMessage>& add_replies);
   bool handleSimpleActionReply(SimpleMessage& in_msg, SimpleMessage& reply);
   bool handleUnsupported(SimpleMessage& in_msg, SimpleMessage& reply);
 

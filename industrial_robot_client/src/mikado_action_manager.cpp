@@ -96,11 +96,18 @@ void MikadoActionManager::process_requests()
 {
     SimpleMessage request;
     SimpleMessage reply;
+    std::vector<SimpleMessage> add_replies;
     while(processor_running_)
     {
       if(try_pop_request(request)) {
-        if(this->message_processor_->process(request, reply)) {
+        add_replies.clear();
+        if(this->message_processor_->process(request, reply, add_replies)) {
           push_reply(reply);
+          if(add_replies.size() > 0){
+            for(SimpleMessage rep : add_replies){
+              push_reply(rep);
+            }
+          }
         }
       } else {
         std::this_thread::sleep_for(std::chrono::milliseconds(5));

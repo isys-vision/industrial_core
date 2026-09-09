@@ -35,7 +35,7 @@ using namespace industrial_robot_client::mikado_utils;
 namespace industrial_robot_client
 {
 
-bool SimpleMessageProcessor::process(SimpleMessage& in_msg, SimpleMessage& reply)
+bool SimpleMessageProcessor::process(SimpleMessage& in_msg, SimpleMessage& reply, std::vector<SimpleMessage>& add_replies)
 {
   bool success = false;
   printf("\n[MikadoActionManager] --- Received Message ---\n");
@@ -47,13 +47,13 @@ bool SimpleMessageProcessor::process(SimpleMessage& in_msg, SimpleMessage& reply
   switch (in_msg.getMessageType())
   {
     case mik_msg_type::ROBOT_STATUS:
-      success = handleStatus(in_msg, reply);
+      success = handleStatus(in_msg, reply, add_replies);
       break;
     case mik_msg_type::ROBOT_INFO:
-      success = handleStatus(in_msg, reply);
+      success = handleStatus(in_msg, reply, add_replies);
       break;
     case mik_msg_type::ACTION_TRIG:
-      success = handleActionTrigger(in_msg, reply);
+      success = handleActionTrigger(in_msg, reply, add_replies);
       break;
     default:
       success = handleUnsupported(in_msg, reply);
@@ -62,7 +62,7 @@ bool SimpleMessageProcessor::process(SimpleMessage& in_msg, SimpleMessage& reply
   return success;
 }
 
-bool SimpleMessageProcessor::handleStatus(SimpleMessage& in_msg, SimpleMessage& reply)
+bool SimpleMessageProcessor::handleStatus(SimpleMessage& in_msg, SimpleMessage& reply, std::vector<SimpleMessage>& add_replies)
 {
   MikStatusMessage status_msg;
   std::string error_msg;
@@ -84,7 +84,7 @@ bool SimpleMessageProcessor::handleStatus(SimpleMessage& in_msg, SimpleMessage& 
   return false;
 }
 
-bool SimpleMessageProcessor::handleActionTrigger(SimpleMessage& in_msg, SimpleMessage& reply)
+bool SimpleMessageProcessor::handleActionTrigger(SimpleMessage& in_msg, SimpleMessage& reply, std::vector<SimpleMessage>& add_replies)
 {
   MikActionTriggerMessage trigger_msg;
   MikSimpleActionReply action_reply;
@@ -108,14 +108,14 @@ bool SimpleMessageProcessor::handleActionTrigger(SimpleMessage& in_msg, SimpleMe
   }
   
   // do actual action handling
-  if(!handleAction(trigger,action_reply)){
+  if(!handleAction(trigger,action_reply, add_replies)){
     createSimpleActionReplyError(trigger, action_reply);
   }
 
   return actionReplyToMsg(action_reply, reply);
 }
 
-bool SimpleMessageProcessor::handleAction(const MikActionTrigger& trigger, MikSimpleActionReply& action_reply){
+bool SimpleMessageProcessor::handleAction(const MikActionTrigger& trigger, MikSimpleActionReply& action_reply, std::vector<SimpleMessage>& add_replies){
   switch(trigger.getActionId()){
     case mik_action_id::CAPTURE_PC:{
       // a ros implementation could make a ros action call here and publish the result once ready
@@ -149,6 +149,69 @@ bool SimpleMessageProcessor::handleAction(const MikActionTrigger& trigger, MikSi
     case mik_action_id::FIND_PICKS:{
       printf("[Message Processor] Starting pick search");
       createSimpleActionReplySuccess(trigger, action_reply);
+      return true;
+    }
+    case mik_action_id::GET_NUM_DETECTS:{
+      std::vector<int> detects = {37};
+      printf("[Message Processor] Number of detected products: %d", detects[0]);
+      createSimpleActionReplySuccess(trigger, action_reply);
+      action_reply.setAdditionalIntArgs(detects);
+      return true;
+    }
+    case mik_action_id::GET_NUM_PICKABLE:{
+      std::vector<int> pickable = {9};
+      printf("[Message Processor] Number of pickable products: %d", pickable[0]);
+      createSimpleActionReplySuccess(trigger, action_reply);
+      action_reply.setAdditionalIntArgs(pickable);
+      return true;
+    }
+    case mik_action_id::GET_PROD_POSE:{
+      printf("[Message Processor] Returning prod pose of prod with index %d\n", trigger.getAdditionalIntArgs()[0]);
+      createSimpleActionReplySuccess(trigger, action_reply);
+      std::vector<shared_real> pose = {2942.8, 419.6, -789.0, 0.3, -41.7, 115.8};
+      action_reply.setAdditionalRealArgs(pose);
+      return true;
+    }
+    case mik_action_id::GET_PICK_TRAJ:{
+      printf("[Message Processor] Sending Pick Trajectory");
+      int traj_length = 12;
+      int traj_id = 1;
+      int traj_type = mik_traj_type::APPROACH;
+      MikadoDynamicJointsTrajPt traj_pt;
+      MikadoDynamicJointsTrajPtMessage traj_pt_msg;
+      SimpleMessage msg;
+      // first message confirms that mikado received action
+      // later we should return then and send traj info and traj pts later. For now this all happens at once.
+      createSimpleActionReplySuccess(trigger, action_reply);
+
+      // use action reply for traj info
+      MikSimpleActionReply trajInfoReply;
+      trajInfoReply.copyFrom(action_reply);
+      std::vector<int> traj_info = {traj_id, traj_type, traj_length};
+      trajInfoReply.setAdditionalIntArgs(traj_info);
+      MikSimpleActionReplyMessage trajInfoReplyMsg;
+      trajInfoReplyMsg.init(trajInfoReply);
+      SimpleMessage trajInfoSimpleMsg;
+      trajInfoReplyMsg.toTopic(trajInfoSimpleMsg);
+      add_replies.push_back(trajInfoSimpleMsg);
+
+      for(int i = 0; i < traj_length; i++){
+        traj_pt.init();
+        traj_pt.setTrajectoryId(traj_id);
+        traj_pt.setSequence(i+1);
+        traj_pt.setMotionType(mik_motion_type::JOINT);
+        traj_pt.setTrajectoryPart(traj_type);
+        traj_pt.setVelocity(100.0);
+        std::vector<float> positions = {37.3, 321.2, -11.9, -286.0, 0.0, 14.6};
+        traj_pt.setPositions(positions);
+        if(i == traj_length-1){
+          traj_pt.setIsLastTrajPt(true);
+        }
+        traj_pt_msg.init(traj_pt);
+        traj_pt_msg.toTopic(msg);
+        add_replies.push_back(msg);
+      }
+
       return true;
     }
     default:{

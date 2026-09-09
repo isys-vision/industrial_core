@@ -116,6 +116,9 @@ namespace mik_action_id
   const int GET_GRASP_ID = 2005;
   const int GET_GRASP_PRD_POS = 2006;
   const int GET_GRASP_POSE = 2007;
+  const int GET_NUM_PICKABLE = 2008;
+  const int GET_NUM_DETECTS = 2009;
+  const int GET_PROD_POSE = 2010;
   const int GET_CALIB_PLAN = 2100;
   const int GET_CALIB_RESULTS = 2101;
   const int GET_CONNECTION_INFO = 2102;
