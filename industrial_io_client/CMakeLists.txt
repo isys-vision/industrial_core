@@ -6,7 +6,7 @@ find_package(catkin REQUIRED COMPONENTS roscpp std_msgs std_srvs sensor_msgs
   control_msgs trajectory_msgs simple_message actionlib_msgs actionlib 
   urdf industrial_msgs industrial_utils)
 
-find_package(Boost REQUIRED COMPONENTS system thread chrono)
+find_package(Boost REQUIRED COMPONENTS thread chrono)
 
 # The definition is copied from the CMakeList for the simple_message package.
 add_definitions(-DROS=1)           #build using ROS libraries

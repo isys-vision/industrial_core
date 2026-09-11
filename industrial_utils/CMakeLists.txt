@@ -1,10 +1,10 @@
-cmake_minimum_required(VERSION 3.0.2)
+cmake_minimum_required(VERSION 3.22.0)
 
 project(industrial_utils)
 
 find_package(catkin REQUIRED COMPONENTS roscpp urdf)
 
-find_package(Boost REQUIRED COMPONENTS system)
+find_package(Boost REQUIRED COMPONENTS)
 
 catkin_package(
     CATKIN_DEPENDS roscpp urdf
