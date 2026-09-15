@@ -185,7 +185,7 @@ namespace industrial
       return rtn;
     }
 
-    bool SimpleSocket::receiveBytesWithTimeout(ByteArray & buffer, shared_int num_bytes, double timeout)
+    bool SimpleSocket::receiveBytesWithTimeout(ByteArray & buffer, shared_int num_bytes, double timeout, bool set_connected)
     {
       int rc = this->SOCKET_FAIL;
       bool rtn = false;
@@ -215,7 +215,7 @@ namespace industrial
           auto current_time = std::chrono::steady_clock::now();
           elapsed = std::chrono::duration<double>(current_time - start_time).count();
           if (elapsed >= timeout){
-            LOG_ERROR("Total receive timeout reached (%.3f s). %u bytes still pending.",
+            LOG_DEBUG("Total receive timeout reached (%.3f s). %u bytes still pending.",
                       timeout, remainBytes);
             rtn = false;
             break;
@@ -223,7 +223,8 @@ namespace industrial
           // Polling the socket results in an "interruptable" socket read.  This
           // allows Control-C to break out of a socket read.  Without polling,
           // a sig-term is required to kill a program in a socket read function.
-          if (this->rawPoll(this->SOCKET_POLL_TO, ready, error))
+          int poll_timeout_ms = static_cast<int>(std::max(0.0, (timeout - elapsed) * 1000.0));
+          if (this->rawPoll(poll_timeout_ms, ready, error))
           {
             if(ready)
             {
@@ -238,7 +239,7 @@ namespace industrial
               }
               else if (0 == rc)
               {
-                LOG_WARN("Recieved zero bytes: %u", rc);
+                LOG_DEBUG("Recieved zero bytes: %u", rc);
 		        remainBytes = 0;
                 rtn = false;
                 break;
@@ -279,7 +280,9 @@ namespace industrial
 
       if (!rtn)
       {
-        this->setConnected(false);
+        if(set_connected){
+          this->setConnected(false);
+        }
       }
       return rtn;
     }

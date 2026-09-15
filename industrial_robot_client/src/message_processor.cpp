@@ -99,7 +99,7 @@ bool SimpleMessageProcessor::handleActionTrigger(SimpleMessage& in_msg, SimpleMe
   }
   printf("\n[Message Processor] --- Mikado Action Trigger ---\n");
   trigger_msg.action_trigger_.print();
-  const MikActionTrigger& trigger = trigger_msg.action_trigger_;
+  MikActionTrigger& trigger = trigger_msg.action_trigger_;
 
   // handle special case GET_CONNECTION_INFO
   if(trigger.getActionId() == mik_action_id::GET_CONNECTION_INFO){

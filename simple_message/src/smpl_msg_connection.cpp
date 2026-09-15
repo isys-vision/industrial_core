@@ -123,7 +123,7 @@ bool SmplMsgConnection::receiveMsg(SimpleMessage & message)
 }
 
 
-bool SmplMsgConnection::receiveMsgWithTimeout(SimpleMessage & message, double timeout)
+bool SmplMsgConnection::receiveMsgWithTimeout(SimpleMessage & message, double timeout, bool set_connected)
 {
   ByteArray lengthBuffer;
   ByteArray msgBuffer;
@@ -132,7 +132,7 @@ bool SmplMsgConnection::receiveMsgWithTimeout(SimpleMessage & message, double ti
   bool rtn = false;
 
 
-  rtn = this->receiveBytesWithTimeout(lengthBuffer, message.getLengthSize(), timeout);
+  rtn = this->receiveBytesWithTimeout(lengthBuffer, message.getLengthSize(), timeout, set_connected);
 
   if (rtn)
   {
@@ -162,7 +162,7 @@ bool SmplMsgConnection::receiveMsgWithTimeout(SimpleMessage & message, double ti
   }
   else
   {
-    LOG_ERROR("Failed to receive message length");
+    LOG_DEBUG("Failed to receive message length");
     rtn = false;
   }
 

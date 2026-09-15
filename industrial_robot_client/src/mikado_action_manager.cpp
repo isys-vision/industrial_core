@@ -77,6 +77,7 @@ bool MikadoActionManager::try_pop_request(SimpleMessage& request_msg){
   if(request_buffer_.empty()){
     return false;
   }
+  printf("[RequestBuffer] Currently %d requests in buffer\n", request_buffer_.size());
   request_msg = std::move(request_buffer_.front());
   request_buffer_.pop();
   return true;
@@ -87,6 +88,7 @@ bool MikadoActionManager::try_pop_reply(SimpleMessage& reply_msg){
   if(reply_buffer_.empty()){
     return false;
   }
+  printf("[ReplyBuffer] Currently %d replies in buffer\n", reply_buffer_.size());
   reply_msg = std::move(reply_buffer_.front());
   reply_buffer_.pop();
   return true;
@@ -116,6 +118,7 @@ void MikadoActionManager::process_requests()
 }
 
 void MikadoActionManager::cycle(){
+  SimpleMessage request_msg;
   if(is_first_cycle_){
       is_first_cycle_ = false;
       processor_running_ = true;
@@ -123,20 +126,20 @@ void MikadoActionManager::cycle(){
   }
   while(try_pop_reply(reply_msg_)){
     if (tcp_client_.sendMsg(reply_msg_)){
-      printf("Sent reply");
+      std::this_thread::sleep_for(std::chrono::milliseconds(5));
     } else {
-      printf("[Action Manager] Failed to send reply message");
+      printf("[Action Manager] Failed to send reply message\n");
       if(!tcp_client_.isConnected()){
         connect();
       }
     }
   }
-   if (tcp_client_.receiveMsg(request_msg_)){
-      printf("\n[Action Manager] Received Request. Msg Type: %d\n", request_msg_.getMessageType());
-      push_request(request_msg_);
+   if (tcp_client_.receiveMsgWithTimeout(request_msg, 0.01, false)){
+      printf("\n[Action Manager] Received Request. Msg Type: %d\n", request_msg.getMessageType());
+      push_request(request_msg);
       // TODO: IF NOT TOPIC COMM TYPE -> ACKNOWLEDGE RECEIVING REQUEST 
     } else {
-      this->connect();
+      //this->connect();
     }
 }
 };

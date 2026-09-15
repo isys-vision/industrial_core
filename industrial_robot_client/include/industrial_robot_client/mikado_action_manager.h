@@ -56,7 +56,6 @@ private:
   bool is_first_cycle_;
   IMessageProcessor* message_processor_;
   TcpClient tcp_client_;
-  SimpleMessage request_msg_;
   SimpleMessage reply_msg_;
   std::queue<SimpleMessage> reply_buffer_;
   std::mutex reply_buffer_mutex_;

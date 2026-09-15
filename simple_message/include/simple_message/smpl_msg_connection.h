@@ -92,7 +92,7 @@ public:
    *
    * \return true if successful
    */
-  virtual bool receiveMsgWithTimeout(industrial::simple_message::SimpleMessage & message, double timeout);
+  virtual bool receiveMsgWithTimeout(industrial::simple_message::SimpleMessage & message, double timeout, bool set_connected = true);
   
   
   /**
@@ -149,7 +149,7 @@ private:
                             industrial::shared_types::shared_int num_bytes) =0;
 
   virtual bool receiveBytesWithTimeout(industrial::byte_array::ByteArray & buffer,
-                            industrial::shared_types::shared_int num_bytes, double timeout) =0;
+                            industrial::shared_types::shared_int num_bytes, double timeout, bool set_conneceted = true) =0;
 
 };
 

@@ -262,7 +262,7 @@ protected:
   bool receiveBytes(industrial::byte_array::ByteArray & buffer,
       industrial::shared_types::shared_int num_bytes);
   bool receiveBytesWithTimeout(industrial::byte_array::ByteArray & buffer,
-      industrial::shared_types::shared_int num_bytes, double timeout);
+      industrial::shared_types::shared_int num_bytes, double timeout, bool set_connected=true);
   // Virtual
   virtual int rawSendBytes(char *buffer,
       industrial::shared_types::shared_int num_bytes)=0;
