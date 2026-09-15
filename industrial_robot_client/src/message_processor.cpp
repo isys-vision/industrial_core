@@ -214,6 +214,11 @@ bool SimpleMessageProcessor::handleAction(const MikActionTrigger& trigger, MikSi
 
       return true;
     }
+    case mik_action_id::KEEPALIVE:{
+      printf("[Message Processor] KEEPALIVE\n");
+      createSimpleActionReplySuccess(trigger, action_reply);
+      return true;
+    }
     default:{
       std::string error_msg = "Cannot handle action with id " + std::to_string(trigger.getActionId()) + ". No handler implemented.";
       printf("[Message Processor] %s\n", error_msg.c_str());

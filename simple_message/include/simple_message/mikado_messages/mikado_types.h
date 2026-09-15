@@ -105,6 +105,7 @@ namespace mik_action_id
   const int START_CALIB = 1100;
   const int CAPTURE_CALIB = 1101;
   const int FINISH_CALIB = 1102;
+  const int KEEPALIVE = 1998;
   const int CREATE_ERR_REPORT = 1999;
 
   // Getters (get commands)
