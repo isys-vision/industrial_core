@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <chrono>
 #include <queue>
 #include <mutex>
 
@@ -29,7 +30,9 @@ MikadoActionManager::MikadoActionManager()
 : message_processor_(nullptr),
 action_port_(0),
 robot_ip_(""),
-is_first_cycle_(true)
+is_first_cycle_(true),
+time_since_last_msg_(0.0),
+keepalive_timeout_(5.0)
 {
 }
 
@@ -60,6 +63,7 @@ void MikadoActionManager::connect(){
     printf("[Action Manager] Failed to connect to server\n");
     sleep(5);
   }
+  time_since_last_msg_ = 0.0;
 }
 
 void MikadoActionManager::push_request(SimpleMessage& request_msg){
@@ -119,6 +123,17 @@ void MikadoActionManager::process_requests()
 
 void MikadoActionManager::cycle(){
   SimpleMessage request_msg;
+
+  if(time_since_last_msg_ >= keepalive_timeout_){
+    printf("[Action Manager] Did not receive a message for at least %f seconds. Trying to reconnect.\n", keepalive_timeout_);
+    tcp_client_.setDisconnected();
+    connect();
+  }
+
+  const auto cycle_start = std::chrono::steady_clock::now();
+  bool message_sent = false;
+  bool message_received = false;
+
   if(is_first_cycle_){
       is_first_cycle_ = false;
       processor_running_ = true;
@@ -126,6 +141,7 @@ void MikadoActionManager::cycle(){
   }
   while(try_pop_reply(reply_msg_)){
     if (tcp_client_.sendMsg(reply_msg_)){
+      message_sent = true;
       std::this_thread::sleep_for(std::chrono::milliseconds(5));
     } else {
       printf("[Action Manager] Failed to send reply message\n");
@@ -136,10 +152,19 @@ void MikadoActionManager::cycle(){
   }
    if (tcp_client_.receiveMsgWithTimeout(request_msg, 0.01, false)){
       printf("\n[Action Manager] Received Request. Msg Type: %d\n", request_msg.getMessageType());
+      message_received = true;
       push_request(request_msg);
       // TODO: IF NOT TOPIC COMM TYPE -> ACKNOWLEDGE RECEIVING REQUEST 
     } else {
       //this->connect();
     }
+
+  const double cycle_duration = std::chrono::duration<double>(
+      std::chrono::steady_clock::now() - cycle_start).count();
+  if (message_sent || message_received){
+    time_since_last_msg_ = 0.0;
+  } else {
+    time_since_last_msg_ += cycle_duration;
+  }
 }
 };

@@ -54,6 +54,8 @@ private:
   string robot_ip_;
   int action_port_;
   bool is_first_cycle_;
+  double time_since_last_msg_;
+  double keepalive_timeout_;
   IMessageProcessor* message_processor_;
   TcpClient tcp_client_;
   SimpleMessage reply_msg_;
