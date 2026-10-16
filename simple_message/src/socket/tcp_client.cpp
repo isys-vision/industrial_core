@@ -90,7 +90,8 @@ bool TcpClient::createSocket()
   bool rtn;
   int disableNodeDelay = 1;
 
-  if (this->isConnected()) CLOSE(this->getSockHandle());
+  if (this->SOCKET_FAIL != this->getSockHandle()) CLOSE(this->getSockHandle());
+  this->setSockHandle(this->SOCKET_FAIL);
 
   rc = SOCKET(AF_INET, SOCK_STREAM, 0);
   if (this->SOCKET_FAIL != rc)
@@ -136,6 +137,7 @@ bool TcpClient::makeConnect()
     {
       this->logSocketError("Failed to connect to server", rc, errno);
       CLOSE(this->getSockHandle());
+      this->setSockHandle(this->SOCKET_FAIL);
       rtn = false;
     }
   }
