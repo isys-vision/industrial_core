@@ -53,10 +53,7 @@ TcpClient::~TcpClient()
 
 bool TcpClient::init(char *buff, int port_num)
 {
-
-  bool rtn = this->createSocket();
-
-  addrinfo *result;
+  addrinfo *result = NULL;
   addrinfo hints = {};
 
   // Initialize address data structure
@@ -74,23 +71,35 @@ bool TcpClient::init(char *buff, int port_num)
   if (0 == GETADDRINFO(buff, NULL, &hints, &result))
   {
     this->sockaddr_ = *((sockaddr_in *)result->ai_addr);
+    freeaddrinfo(result);
   }
   else
   {
     this->sockaddr_.sin_addr.s_addr = INET_ADDR(buff);
+    if (INADDR_NONE == this->sockaddr_.sin_addr.s_addr)
+    {
+      LOG_ERROR("init: invalid address '%s'", buff);
+      return false;
+    }
   }
   this->sockaddr_.sin_port = HTONS(port_num);
 
-  return rtn;
+  return true;  // socket creation deferred to makeConnect()
 }
 
 bool TcpClient::createSocket()
 {
   int rc;
-  bool rtn;
-  int disableNodeDelay = 1;
+  int disableNagleDelay = 1;
 
-  if (this->isConnected()) CLOSE(this->getSockHandle());
+  if (this->SOCKET_FAIL != this->getSockHandle())
+  {
+    if (CLOSE(this->getSockHandle()))
+    {
+      LOG_ERROR("Failed to close socket, Error: '%s' (errno: %d)", strerror(errno), errno);
+    }
+  }
+  this->setSockHandle(this->SOCKET_FAIL);
 
   rc = SOCKET(AF_INET, SOCK_STREAM, 0);
   if (this->SOCKET_FAIL != rc)
@@ -98,20 +107,19 @@ bool TcpClient::createSocket()
     this->setSockHandle(rc);
 
     // The set no delay disables the NAGEL algorithm
-    rc = SET_NO_DELAY(this->getSockHandle(), disableNodeDelay);
+    rc = SET_NO_DELAY(this->getSockHandle(), disableNagleDelay);
     if (this->SOCKET_FAIL == rc)
     {
       LOG_WARN("Failed to set no socket delay, sending data can be delayed by up to 250ms");
     }
 
-    rtn = true;
+    return true;
   }
   else
   {
     LOG_ERROR("Failed to create socket, rc: %d", rc);
-    rtn = false;
+    return false;
   }
-  return rtn;
 }
 
 bool TcpClient::makeConnect()
@@ -122,23 +130,27 @@ bool TcpClient::makeConnect()
 
   if (!this->isConnected())
   {
-    this->createSocket();
-
-    addrSize = sizeof(this->sockaddr_);
-    rc = CONNECT(this->getSockHandle(), (sockaddr *)&this->sockaddr_, addrSize);
-    if (this->SOCKET_FAIL != rc)
+    if (this->createSocket())
     {
-      LOG_INFO("Connected to server");
-      this->setConnected(true);
-      rtn = true;
-    }
-    else
-    {
-      this->logSocketError("Failed to connect to server", rc, errno);
-      rtn = false;
+      addrSize = sizeof(this->sockaddr_);
+      rc = CONNECT(this->getSockHandle(), (sockaddr *)&this->sockaddr_, addrSize);
+      if (this->SOCKET_FAIL != rc)
+      {
+        LOG_INFO("Connected to server");
+        this->setConnected(true);
+        rtn = true;
+      }
+      else
+      {
+        this->logSocketError("Failed to connect to server", rc, errno);
+        if (CLOSE(this->getSockHandle()))
+        {
+          LOG_ERROR("Failed to close socket, Error: '%s' (errno: %d)", strerror(errno), errno);
+        }
+        this->setSockHandle(this->SOCKET_FAIL);
+      }
     }
   }
-
   else
   {
     LOG_WARN("Tried to connect when socket already in connected state");
