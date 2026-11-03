@@ -38,6 +38,11 @@
 #include "tcp_socket.h"
 #endif
 
+#ifdef LINUXSOCKETS
+#include <fcntl.h>
+#include <poll.h>
+#endif
+
 
 namespace industrial
 {
@@ -76,8 +81,19 @@ public:
     // Overrides
     bool makeConnect();
 
+    /**
+     * \brief Non-blocking connect (POSIX only).  Attempts to connect without
+     * blocking indefinitely; waits up to timeout ms for the connection to
+     * complete.  On Motoplus this behaves like the blocking makeConnect().
+     *
+     * \param timeout max time to wait for connection to complete (ms)
+     * \return true on success, false otherwise
+     */
+    bool makeConnect(int timeout);
+
 private:
     bool createSocket();
+    void closeSocket();
 };
 
 } //tcp_client
